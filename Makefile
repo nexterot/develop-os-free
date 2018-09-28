@@ -11,51 +11,51 @@ loop_second = /dev/loop3
 OBJFILES = loader.o common/printf.o common/screen.o kernel.o
 
 .PHONY: all run clean rebuild
-all: kernel.bin disk.img
+all: bin/kernel.bin bin/disk.img
 run: 
-	qemu-system-i386 -hda disk.img	
+	sudo qemu-system-i386 -hda bin/disk.img	
 clean:
 	@echo "Cleaning workspace..."
-	@umount $(loop_second) 2>/dev/null || true
-	@losetup -d $(loop_first) 2>/dev/null || true
-	@losetup -d $(loop_second) 2>/dev/null || true
-	@rm -rf $(OBJFILES) kernel.bin disk.img tempdir/ mnt/
+	@sudo umount mnt/ || true
+	@sudo losetup -d $(loop_first) || true
+	@sudo losetup -d $(loop_second) || true
+	@sudo rm -rf $(OBJFILES) kernel.bin disk.img tempdir/ mnt/ bin/*
 	@echo "Done!"
 rebuild: clean all
-kernel.bin: $(OBJFILES)
+bin/kernel.bin: $(OBJFILES)
 	@echo "Creating kernel..."
+	@mkdir -p bin
 	@$(LD) -T linker.ld -o $@ $^ $(LFLAGS) 1>/dev/null
-disk.img:	
+bin/disk.img:	
 	@echo "Creating image..."
-	@dd if=/dev/zero of=disk.img bs=512 count=131072 status=none
+	@dd if=/dev/zero of=$@ bs=512 count=131072 status=none
 	
 	@echo "Creating partition table..."
-	@(echo n; echo p; echo 1; echo 2048; echo 131071; echo a; echo w;) | fdisk disk.img 1>/dev/null
+	@(echo n; echo p; echo 1; echo 2048; echo 131071; echo a; echo w;) | fdisk $@ 1>/dev/null
 	
 	@echo "Creating ex2 filesystem..."
-	@losetup $(loop_second) disk.img -o 1048576 
-	@mke2fs $(loop_second) -q
+	@sudo losetup $(loop_second) $@ -o 1048576 
+	@sudo mke2fs $(loop_second) -q
 	
 	@echo "Installing grub..."
 	@mkdir -p mnt
-	@mount $(loop_second) mnt
-	@mkdir -p mnt/boot
-	@losetup $(loop_first) disk.img
-	@grub-install --root-directory=mnt --boot-directory=mnt/boot --no-floppy --modules="normal part_msdos ext2 multiboot biosdisk" $(loop_first) 1>/dev/null
-	@cp grub/grub.cfg mnt/boot/grub/grub.cfg
+	@sudo mount $(loop_second) mnt
+	@sudo mkdir -p mnt/boot
+	@sudo losetup $(loop_first) $@
+	@sudo grub-install --root-directory=mnt --boot-directory=mnt/boot --no-floppy --modules="normal part_msdos ext2 multiboot biosdisk" $(loop_first) 1>/dev/null
+	@sudo cp grub/grub.cfg mnt/boot/grub/grub.cfg
 	@sync
 	
 	@echo "Copying kernel to image..."
-	@cp kernel.bin mnt/
+	@sudo cp bin/kernel.bin mnt/
 	
 	@echo "Cleaning up..."
-	@umount $(loop_second)
-	@rm -rf mnt
-	@losetup -d $(loop_first)
-	@losetup -d $(loop_second)
-	@rm -f kernel.bin
+	@sudo umount $(loop_second)
+	@sudo rm -rf mnt/
+	@sudo losetup -d $(loop_first)
+	@sudo losetup -d $(loop_second)
 	
-	@echo "Success! Output image is 'disk.img'"
+	@echo "Success! Output image is '$@'"
 .s.o:
 	@$(ASM) $(ASFLAGS) -o $@ $< 1>/dev/null
 .c.o:

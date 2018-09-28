@@ -31,10 +31,45 @@ First make sure you have all tools listed in **Dependencies** block installed. T
 ```bash
 spam@eggs:~$ git clone https://github.com/Nexterot/develop-os-free
 spam@eggs:~$ cd develop-os-free
-spam@eggs:~$ sudo make
+spam@eggs:~$ make
+```
+In case of errors, or just to clean the directory:
+```bash
+spam@eggs:~$ make clean
+```
+Also, the following command is an alias for ```make clean && make```:
+```bash
+spam@eggs:~$ make rebuild
 ```
 ### How to test
 To test it with [qemu](https://www.qemu.org/) emulator, run:
 ```bash
-spam@eggs:~$ sudo make run
+spam@eggs:~$ make run
 ```
+
+### If you ran into some problem
+<details><summary>Details</summary>
+  
+<p>
+  
+#### Problem:
+```
+losetup: bin/disk.img: failed to set up loop device: Device or resource busy
+```
+#### Solution:<br>
+Look up busy loop devices:
+```bash
+spam@eggs:~$ losetup -a
+```
+Then edit these lines in Makefile, changing '/dev/loop2' or '/dev/loop3' to a free loop device:
+```
+loop_first  = /dev/loop2
+loop_second = /dev/loop3
+```
+Finally do:
+```bash
+spam@eggs:~$ make rebuild
+```
+
+</p>
+</details>
