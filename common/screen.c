@@ -1,3 +1,4 @@
+#include "screen.h"
 #include "types.h"
 
 #define GREEN    0x2

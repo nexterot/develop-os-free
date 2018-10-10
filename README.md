@@ -10,7 +10,7 @@ The main aim of the coursework is to implement native C libs' functions for I/O 
 - A minimal OS kernel supporting [Multiboot](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html) specification;
 - Embedding [grub2](https://www.gnu.org/software/grub/) bootloader that supports Multiboot;
 - Some I/O emulating functions taken from other sources;
-- Minimal code logic showing "Hello world" at start.
+- Cursor functions: disable_cursor, enable_cursor, move_cursor.
 ### How it actually works
 Project build with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/Nexterot/develop-os-free/blob/master/Makefile) contains all the compiling and building logic. Here are main steps:
 1. Kernel compilation (32 bit);

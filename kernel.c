@@ -1,9 +1,16 @@
 #include "printf.h"
 #include "screen.h"
 #include "types.h"
+#include "cursor.h"
+
+int cursor_x;
+int cursor_y;
 
 void main()
 {   
     clear_screen();
-    printf("\n>>> Hello World!\n");
+    disable_cursor();
+    enable_cursor(0, 15);
+    printf("hello");
+    move_cursor(5, 0);
 }
