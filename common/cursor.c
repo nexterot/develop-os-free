@@ -1,7 +1,7 @@
 #include "cursor.h"
 
-extern cursor_x;
-extern cursor_y;
+extern int cursor_x;
+extern int cursor_y;
 
 void disable_cursor() {
 	outb(0x0A, 0x3D4);
@@ -24,4 +24,8 @@ void move_cursor(int x, int y) {
 	outb((unsigned char) ((pos >> 8) & 0xFF), 0x3D5);
 	cursor_x = x;
 	cursor_y = y;
+}
+
+void update_cursor() {
+	move_cursor(cursor_x, cursor_y);
 }
