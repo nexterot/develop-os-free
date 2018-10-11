@@ -7,5 +7,7 @@
 void clear_screen();
 void putchar(int c);
 int puts(const char* s);
+int getchar();
+char* gets(char* s);
 
 #endif

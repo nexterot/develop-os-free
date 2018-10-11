@@ -8,7 +8,8 @@ This is my 5th term course work on the "Operating Systems" subject at the [Depar
 The main aim of the coursework is to implement native C libs' functions for I/O tasks (e.g., putchat, printf, gets, scanf) and memory layer (i.e., these are functions like malloc, free, and so on) so that every programmer could write C source code only (using standart libs) and finally get a complete bootable image executing the code. 
 ### What is done by far
 - A minimal OS kernel supporting [Multiboot](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html) specification;
-- Embedding [grub2](https://www.gnu.org/software/grub/) bootloader that supports Multiboot;
+- Embedding [grub2](https://www.gnu.org/software/grub/) bootloader;
+- Input functions: getchar, gets;
 - Output functions: putchar, puts; also printf function taken from other source;
 - Cursor functions: disable_cursor, enable_cursor, move_cursor, update_cursor.
 ### How it actually works

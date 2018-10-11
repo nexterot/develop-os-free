@@ -9,9 +9,11 @@ int cursor_y;
 void main()
 {   
     clear_screen();
-    enable_cursor(0, 15);
-    char *s = "Hello, world!\n";
-    s[5] = '!';
-    puts(s);
-    putchar(s[5]);
+    char string[256];
+    for (;;) {
+		gets(string);
+		putchar('\n');
+		puts(string);
+		putchar('\n');
+	}
 }
