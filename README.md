@@ -11,7 +11,8 @@ The main aim of the coursework is to implement native C libs' functions for I/O 
 - Embedding [grub2](https://www.gnu.org/software/grub/) bootloader;
 - Input functions: getchar, gets;
 - Output functions: putchar, puts; also printf function taken from other source;
-- Cursor functions: disable_cursor, enable_cursor, move_cursor, update_cursor.
+- Cursor functions: disable_cursor, enable_cursor, move_cursor, update_cursor;
+- Time functions: delay.
 ### How it actually works
 Project build with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/Nexterot/develop-os-free/blob/master/Makefile) contains all the compiling and building logic. Here are main steps:
 1. Kernel compilation (32 bit);

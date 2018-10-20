@@ -5,10 +5,10 @@ CFLAGS  	= -Wall -fno-builtin -nostdinc -nostdlib -m32
 LFLAGS      = -m elf_i386
 ASFLAGS     = -32
 
-loop_first  = /dev/loop3
-loop_second = /dev/loop4
+loop_first  = /dev/loop5
+loop_second = /dev/loop6
 
-OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o common/sys.o
+OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o common/sys.o common/time.o
 
 .PHONY: all run clean rebuild
 all: bin/kernel.bin bin/disk.img

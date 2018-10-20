@@ -1,19 +1,16 @@
 #include "printf.h"
 #include "screen.h"
-#include "types.h"
-#include "cursor.h"
+#include "time.h"
 
 int cursor_x;
 int cursor_y;
 
 void main()
 {   
-    clear_screen();
-    char string[256];
+    int i = 0;
     for (;;) {
-		gets(string);
-		putchar('\n');
-		puts(string);
-		putchar('\n');
+		clear_screen();
+		printf("Time spent: %ds", i++);
+		delay(SECOND);
 	}
 }
