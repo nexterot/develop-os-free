@@ -21,6 +21,7 @@ static void delay_short(unsigned int x) {
 	} while (inb(0x40) & 0b01000000);
 	
 	while (t > TIME) {
+		// Read counter
 		outb(0, 0x43);
 		low = inb(0x40);
 		high = inb(0x40);
@@ -35,3 +36,10 @@ void delay(unsigned int x) {
 	}
 	delay_short(TIME);
 }
+
+void sleeps(unsigned int seconds) {
+	for (unsigned int i = 0; i < seconds; i++) {
+		delay(SECOND);
+	}
+}
+

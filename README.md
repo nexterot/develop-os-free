@@ -12,7 +12,7 @@ The main aim of the coursework is to implement native C libs' functions for I/O 
 - Input functions: getchar, gets;
 - Output functions: putchar, puts; also printf function taken from other source;
 - Cursor functions: disable_cursor, enable_cursor, move_cursor, update_cursor;
-- Time functions: delay.
+- Time functions: delay, sleeps.
 ### How it actually works
 Project build with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/Nexterot/develop-os-free/blob/master/Makefile) contains all the compiling and building logic. Here are main steps:
 1. Kernel compilation (32 bit);

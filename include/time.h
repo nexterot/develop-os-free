@@ -4,6 +4,7 @@
 
 #define SECOND 1193182
 
-void delay(unsigned int x);
+void delay(unsigned int ticks);
+void sleeps(unsigned int seconds);
 
 #endif
