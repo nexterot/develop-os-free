@@ -8,12 +8,12 @@ ASFLAGS     = -32
 loop_first  = /dev/loop5
 loop_second = /dev/loop6
 
-OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o common/sys.o common/time.o
+OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o common/sys.o common/time.o common/memory.o
 
 .PHONY: all run clean rebuild
 all: bin/kernel.bin bin/disk.img
 run: 
-	sudo qemu-system-i386 -hda bin/disk.img	
+	sudo qemu-system-i386 -hda bin/disk.img	-m 16M
 clean:
 	@echo "Cleaning workspace..."
 	@sudo umount mnt/ || true

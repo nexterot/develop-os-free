@@ -20,6 +20,8 @@ loader:
     movl  $(stack + STACKSIZE), %esp # set up the stack
     movl  %eax, magic                # Multiboot magic number
     movl  %ebx, mbd                  # Multiboot data structure
+    pushl %eax
+    pushl %ebx
     call  main                       # call C code
     cli
 hang:
