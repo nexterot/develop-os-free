@@ -15,22 +15,47 @@ void main(multiboot_info_t* mbd, unsigned int magic)
 	program();
 }
 
-void program() {
-	int len = 20;
-	long long* array = (long long*)malloc(len);
-	if (array == NULL) {
-		printf("null!\n");
+void program() {	
+	int len = 1000;
+	// initialize multi-dimensional array
+	int** multi_array = (int**)malloc(len * sizeof(int*));
+	if (multi_array == NULL) {
+		puts("null!\n");
 		return;
 	}
 	for (int i = 0; i < len; i++) {
-		array[i] = i * i;
+		multi_array[i] = malloc(len * sizeof(int));
+		if (multi_array[i] == NULL) {
+			printf("null %d!\n", i);
+			return;
+		}
+		for (int j = 0; j < len; j++) {
+			multi_array[i][j] = i * j;
+		}
 	}
+	// print x^3 for x in range [1, 10)
+	for (int i = 1; i <= 10; i++) {
+		printf("%d\n", multi_array[i][i * i]);
+	}
+	const int THIRTEEN_MILLION = 13000000;
+	// try to malloc more memory (assumed we have ~15Mbytes RAM)
+	char* more_memory = (char*) malloc(THIRTEEN_MILLION * sizeof(char));
+	if (more_memory == NULL) {
+		puts("should free up previous memory first!\n");
+	}
+	// free memory
 	for (int i = 0; i < len; i++) {
-		printf("array[%d]=%llu, &array[%d]=%p\n", i, array[i], i, &array[i]);
+		free(multi_array[i], len * sizeof(int));
 	}
-	char* invalid = (char*)malloc(100000000);
-	if (invalid == NULL) {
-		printf("null!\n");
+	free(multi_array, len * sizeof(int*));
+	// another try
+	more_memory = (char*) malloc(THIRTEEN_MILLION * sizeof(char));
+	if (more_memory == NULL) {
+		puts("shouldn't see this message\n");
 		return;
+	} else {
+		puts("success\n");
 	}
+	free(more_memory, THIRTEEN_MILLION * sizeof(char));
+	puts("done\n");
 }
