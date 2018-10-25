@@ -1,5 +1,10 @@
+/*
+ * Contains screen input/output functions.
+ */
+
 #ifndef _SCREEN_H
 #define _SCREEN_H
+
 #include "types.h"
 #include "sys.h"
 #include "cursor.h"

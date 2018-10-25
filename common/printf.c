@@ -1,4 +1,7 @@
 /*
+ * Contains 'printf' definition.
+ * Downloaded from https://www.bitvisor.org/bitvisor/HTML/S/2921.html
+ * 
  * Copyright (c) 2007, 2008 University of Tsukuba
  * All rights reserved.
  *

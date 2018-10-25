@@ -1,4 +1,4 @@
-	.text
+    .text
     .global loader                   # making entry point visible to linker
 
     .set FLAGS,    0x0               # this is the Multiboot 'flag' field
@@ -20,10 +20,10 @@ loader:
     movl  $(stack + STACKSIZE), %esp # set up the stack
     movl  %eax, magic                # Multiboot magic number
     movl  %ebx, mbd                  # Multiboot data structure
-    pushl %eax
-    pushl %ebx
-    call  main                       # call C code
+    pushl %eax                       # 'mbd'   arg to main func 
+    pushl %ebx                       # 'magic' arg to main func
+    call  main                       # call C main func
     cli
 hang:
-    hlt                              # halt machine should kernel return
+    hlt                              # halt machine
     jmp   hang

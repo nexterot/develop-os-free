@@ -1,4 +1,7 @@
 /*
+ * Contains definitions for 'printf' function implementaion. 
+ * Downloaded from https://www.bitvisor.org/bitvisor/HTML/S/3412.html
+ * 
  * Copyright (c) 2007, 2008 University of Tsukuba
  * All rights reserved.
  *

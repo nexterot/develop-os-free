@@ -1,7 +1,7 @@
-CC      	= gcc
-LD      	= ld
+CC          = gcc
+LD          = ld
 ASM         = as
-CFLAGS  	= -Wall -fno-builtin -nostdinc -nostdlib -m32
+CFLAGS      = -Wall -fno-builtin -nostdinc -nostdlib -m32
 LFLAGS      = -m elf_i386
 ASFLAGS     = -32
 
@@ -12,8 +12,8 @@ OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o com
 
 .PHONY: all run clean rebuild
 all: bin/kernel.bin bin/disk.img
-run: 
-	sudo qemu-system-i386 -hda bin/disk.img	-m 16M
+run:
+	sudo qemu-system-i386 -hda bin/disk.img -m 16M
 clean:
 	@echo "Cleaning workspace..."
 	@sudo umount mnt/ || true
@@ -26,7 +26,7 @@ bin/kernel.bin: $(OBJFILES)
 	@echo "Creating kernel..."
 	@mkdir -p bin
 	@$(LD) -T linker.ld -o $@ $^ $(LFLAGS) 1>/dev/null
-bin/disk.img:	
+bin/disk.img:   
 	@echo "Creating image..."
 	@dd if=/dev/zero of=$@ bs=512 count=131072 status=none
 	

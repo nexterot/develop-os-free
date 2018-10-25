@@ -1,7 +1,8 @@
-#ifndef MULTIBOOT_H
-#define MULTIBOOT_H
-// The following was copied from https://www.gnu.org/software/grub/manual/multiboot/html_node/multiboot.h.html
-
+/* 
+ * Contains Multiboot structures and constants to access from kernel.
+ * Downloaded from https://www.gnu.org/software/grub/manual/multiboot/html_node/multiboot.h.html 
+ */
+ 
 /* multiboot.h - the header for Multiboot */
 /* Copyright (C) 1999, 2001  Free Software Foundation, Inc.
   This program is free software; you can redistribute it and/or modify
@@ -15,6 +16,9 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
+
+#ifndef MULTIBOOT_H
+#define MULTIBOOT_H
 
 /* Macros. */
 
