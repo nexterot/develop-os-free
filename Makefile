@@ -8,7 +8,7 @@ ASFLAGS     = -32
 loop_first  = /dev/loop5
 loop_second = /dev/loop6
 
-OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o common/sys.o common/time.o common/memory.o
+OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o common/sys.o common/time.o common/memory.o common/keyboard.o
 
 .PHONY: all run clean rebuild
 all: bin/kernel.bin bin/disk.img

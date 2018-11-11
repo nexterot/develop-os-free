@@ -30,9 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "types.h"
-#include "stdarg.h"
-#include "screen.h"
+#include "printf.h"
 
 /* printf 20071010
 

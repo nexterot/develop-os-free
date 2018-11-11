@@ -8,6 +8,7 @@
 #include "types.h"
 #include "sys.h"
 #include "cursor.h"
+#include "keyboard.h"
 
 void clear_screen();
 void putchar(int c);

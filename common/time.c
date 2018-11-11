@@ -19,12 +19,16 @@ static void delay_short(unsigned int x) {
 		outb(0b11100010, 0x43);         /* Send read back command */
 	} while (inb(0x40) & 0b01000000);   /* receive read back status byte & check not null */
 	
-	while (t > TIME) {
+	for (;;) {
 		/* Get counter */
 		outb(0, 0x43);
 		low = inb(0x40);
 		high = inb(0x40);
 		t = ((unsigned short)low) | (((unsigned short) high) << 8);
+        if (t < TIME) {
+            break;
+        }
+        key_polling();
 	}
 }
 

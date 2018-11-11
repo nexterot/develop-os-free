@@ -1,14 +1,18 @@
 /*
  *  Contains higher level logic for kernel.
- *  In this example it is shown how to use malloc/free.
+ *  In this example there is a tetris game.
  */
 
 #include "include/multiboot.h"
 #include "memory.h"
 #include "printf.h"
 #include "screen.h"
+#include "time.h"
+#include "keyboard.h"
 
 void program();
+void game_init();
+void tick();
 
 /*  
  * Entry point accessed from 'loader.s'. 
@@ -22,46 +26,46 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
 /* 
  * Contains user-defined program for the kernel.
  */
-void program() {    
-    /* initialize 1000 x 1000 dynamic array of ints */
-    int len = 1000;
-    int** multi_array = (int**)malloc(len * sizeof(int*));
-    if (multi_array == NULL) {
-        puts("null!\n");
-        return;
+void program() {   
+    game_init();
+    char done = 0;
+    while (! done) {
+        key_work();
+        tick();
     }
-    for (int i = 0; i < len; i++) {
-        multi_array[i] = malloc(len * sizeof(int));
-        if (multi_array[i] == NULL) {
-            printf("null %d!\n", i);
-            return;
+}
+
+void game_init() {
+    key_init();
+}
+
+void key_work() {
+    int k;
+    char pressed;
+    key_decode(&k, &pressed);
+    
+    if (k == ARROW_UP) {
+        if (pressed) {
+            move_cursor_delta(0, -1);
         }
-        for (int j = 0; j < len; j++) {
-            multi_array[i][j] = i * j;
+    }
+    if (k == ARROW_DOWN) {
+        if (pressed) {
+            move_cursor_delta(0, 1);
         }
     }
-    /* should print x^3 for x in range [1, 10) */
-    for (int i = 1; i <= 10; i++) {
-        printf("%d\n", multi_array[i][i * i]);
+    if (k == ARROW_LEFT) {
+        if (pressed) {
+            move_cursor_delta(-1, 0);
+        }
     }
-    /* try to malloc more memory (assumed we have ~15Mbytes RAM) */
-    const int THIRTEEN_MILLION = 13000000;
-    char* more_memory = (char*) malloc(THIRTEEN_MILLION * sizeof(char));
-    if (more_memory == NULL) {
-        puts("should free up previous memory first!\n");
+    if (k == ARROW_RIGHT) {
+        if (pressed) {
+            move_cursor_delta(1, 0);
+        }
     }
-    for (int i = 0; i < len; i++) {
-        free(multi_array[i], len * sizeof(int));
-    }
-    free(multi_array, len * sizeof(int*));
-    /* another try */
-    more_memory = (char*) malloc(THIRTEEN_MILLION * sizeof(char));
-    if (more_memory == NULL) {
-        puts("shouldn't see this message\n");
-        return;
-    } else {
-        puts("success\n");
-    }
-    free(more_memory, THIRTEEN_MILLION * sizeof(char));
-    puts("done\n");
+}
+
+void tick() {
+    delay(SECOND / 1000);
 }

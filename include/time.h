@@ -6,6 +6,7 @@
 #define _TIME_H
 
 #include "sys.h"
+#include "keyboard.h"
 
 #define SECOND 1193182  /* 1 second ~ 1193182 ticks */
 
