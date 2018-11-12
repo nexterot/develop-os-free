@@ -11,4 +11,8 @@
 void outb(unsigned char value, unsigned short int port);
 unsigned char inb(unsigned short int port);
 
+int rand();
+void srand(unsigned int seed);
+void rtc_seed();
+
 #endif

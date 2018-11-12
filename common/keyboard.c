@@ -35,8 +35,8 @@ void key_decode(int *key, char *pressed) {
             ringstart = 0;
         }
     }
-    // *pressed = (c >= 0x81) && (c <= 0xED);
     *pressed = (c >= 0x01) && (c <= 0x6D);
+    c &= ~0x80;
     if (c == 0x48) *key = ARROW_UP;
     if (c == 0x4b) *key = ARROW_LEFT;
     if (c == 0x4d) *key = ARROW_RIGHT;
