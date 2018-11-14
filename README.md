@@ -13,9 +13,11 @@ The main aim of the coursework is to implement native C libs' functions for I/O 
 - Output functions: putchar, puts; also printf function taken from other source;
 - Cursor functions: disable_cursor, enable_cursor, move_cursor, update_cursor;
 - Time functions: delay, sleeps;
-- Memory functions: malloc, free.
+- Memory functions: malloc, free;
+- Random functions: rand, srand, rtc_seed;
+- Example application: the Tetris game.
 ### How it actually works
-Project build with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/Nexterot/develop-os-free/blob/master/Makefile) contains all the compiling and building logic. Here are main steps:
+Project build with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/nexterot/develop-os-free/blob/master/Makefile) contains all the compiling and building logic. Here are main steps:
 1. Kernel compilation (32 bit);
 2. Disk image creation and partitioning (using ext2 filesystem);
 3. Installing grub into image via grub-install tool;
@@ -32,7 +34,7 @@ Project build with [Make](https://www.gnu.org/software/make/) tool. [Makefile](h
 ### How to install
 First make sure you have all tools listed in **Dependencies** block installed. Then do the following:
 ```bash
-spam@eggs:~$ git clone https://github.com/Nexterot/develop-os-free
+spam@eggs:~$ git clone https://github.com/nexterot/develop-os-free
 spam@eggs:~$ cd develop-os-free
 spam@eggs:~$ make
 ```

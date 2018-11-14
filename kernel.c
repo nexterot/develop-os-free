@@ -23,13 +23,26 @@
 #define OTHER_CHAR  '@'
 #define BORDER_CHAR '|'
 
-void game();
 void game_init();
+void game();
+void game_update();
+void video_update();
+char check_loose();
+void display_gameover();
+void game_end();
+
+void show_pause();
+
 void key_work();
 void brick_fall();
 void brick_new();
-void game_update();
-void video_update();
+
+void draw_I(int x, int y, char c);
+void draw_I_90(int x, int y, char c);
+void draw_O(int x, int y, char c);
+
+void delete_row();
+void delete_completed_rows();
 
 enum BrickType {
     O,
@@ -75,26 +88,34 @@ int rows_completed = 0;
  * Entry point accessed from 'loader.s'. 
  */
 void main(multiboot_info_t* mbd, unsigned int magic) {   
-    clear_screen();
     mem_init(mbd);
+    key_init();
     rtc_seed();
-    game();
+    disable_cursor();
+    for (;;) {
+        game_init();
+        game();
+        game_end();
+    }
 }
 
 /* 
- * Contains user-defined program for the kernel.
+ * Contains game logic.
  */
 void game() {   
-    game_init();
     char done = 0;
     while (! done) {
-        brick_fall();
-        game_update();
-        video_update();
         for (int i = 0; i < 5; i++) {
             key_work();
             video_update();
             delay(SECOND / 5);
+        }
+        brick_fall();
+        game_update();
+        video_update();
+        if (check_loose()) {
+            done = 1;
+            display_gameover();
         }
     }
 }
@@ -103,7 +124,7 @@ void game() {
  * Initializes game.
  */
 void game_init() {
-    key_init();
+    clear_screen();
     field = malloc(FIELD_WIDTH * sizeof(char*));
     for (int i = 0; i < FIELD_WIDTH; i++) {
         field[i] = malloc(FIELD_HEIGHT * sizeof(char));
@@ -125,11 +146,58 @@ void game_init() {
     brick_new();
 }
 
+void show_pause() {
+    clear_screen();
+    move_cursor(5, 5);
+    puts("paused... press ESC to return to game...");
+    
+    int k = 0;
+    char pressed = 0;
+    while (! (k == ESCAPE && pressed)) {
+        key_decode(&k, &pressed);
+        delay(SECOND / 50);
+    }
+    
+    clear_screen();
+}
+
+/*
+ * Display "game over!".
+ */
+void display_gameover() {
+    clear_screen();
+    move_cursor(5, 5);
+    puts("game over! starting new game after 5 seconds...");
+    sleeps(5);
+}
+
+/*
+ * Ends game.
+ */
+void game_end() {
+    arrow_left_pressed = 0;
+    arrow_right_pressed = 0;
+    arrow_down_pressed = 0;
+    arrow_up_pressed = 0;
+    rows_completed = 0;
+    
+    for (int i = 0; i < FIELD_WIDTH; i++) {
+        free(field[i], FIELD_HEIGHT * sizeof(char));
+    }
+    free(field, FIELD_WIDTH * sizeof(char*));
+    free(brick, sizeof(struct Brick));
+}
+
 void key_work() {
     int k = 0;
     char pressed;
     while (k != UNKNOWN) {
         key_decode(&k, &pressed);
+        if (k == ESCAPE) {
+            if (pressed) {
+                show_pause();
+            }
+        }
         if (k == ARROW_DOWN) {
             if (pressed) {
                 if (! arrow_down_pressed) {
@@ -170,6 +238,15 @@ void video_update() {
         for (int j = 0; j < FIELD_WIDTH; j++) {
             putchar(field[j][i]);
         }
+    }
+    /* borders */
+    for (int i = 0; i < FIELD_HEIGHT; i++) {
+        /* left */
+        move_cursor(VGA_WIDTH/2 - FIELD_WIDTH/2 - 1, VGA_HEIGHT/2 - FIELD_HEIGHT/2 + i);
+        putchar(BORDER_CHAR);
+        /* right */
+        move_cursor(VGA_WIDTH/2 + FIELD_WIDTH/2, VGA_HEIGHT/2 - FIELD_HEIGHT/2 + i);
+        putchar(BORDER_CHAR);
     }
     move_cursor(1, 1);
     printf("%d rows cleared", rows_completed);
@@ -233,6 +310,15 @@ void delete_completed_rows() {
             continue;
         }
     }
+}
+
+char check_loose() {
+    for (int j = 0; j < FIELD_WIDTH; j++) {
+        if (field[j][0] == OTHER_CHAR) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void game_update() {
