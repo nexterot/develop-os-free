@@ -8,15 +8,18 @@
 #include "memory.h"
 
 /* key codes */ 
-#define UNKNOWN -1
-#define ARROW_UP -2
-#define ARROW_DOWN -3
-#define ARROW_LEFT -4
-#define ARROW_RIGHT -5
-#define ESCAPE -6
+enum KeyCode {
+    UNKNOWN ,
+    ARROW_UP,
+    ARROW_DOWN,
+    ARROW_LEFT,
+    ARROW_RIGHT,
+    ESCAPE,
+};
 
-int get_key();
-void key_polling();
+void key_init();
+void key_poll();
 void key_decode(int *key, char *pressed);
+int get_char();
 
 #endif

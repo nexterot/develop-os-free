@@ -13,6 +13,17 @@ char caps_pressed = 0;
 static unsigned char *ringbuf = 0;
 static unsigned int ringstart = 0, ringend = 0, ringsize = 1024;
 
+/*
+ * Initializes memory for ring buffer.
+ * Must be called before any other keyboard function.
+ */
+void key_init() {
+    ringbuf = malloc(ringsize);
+}
+
+/*
+ * Returns first key code from enum KeyCode and pressed flag.
+ */
 void key_decode(int *key, char *pressed) {
     unsigned char c;
     unsigned int ringoldstart = ringstart;
@@ -44,7 +55,11 @@ void key_decode(int *key, char *pressed) {
     if (c == 0x50) *key = ARROW_DOWN;
 }
 
-void key_polling() {
+/*
+ * Is called mainly from delay_short from time.c.
+ * Stores key strokes to buffer every short time if using delay.
+ */
+void key_poll() {
     unsigned char status = inb(0x64);
     if ((status & 1) && ((status & 0x20) == 0)) {
         ringbuf[ringend++] = inb(0x60);
@@ -54,10 +69,9 @@ void key_polling() {
     }
 }
 
-void key_init() {
-    ringbuf = malloc(ringsize);
-}
-
+/*
+ * Reads next key stroke like getchar.
+ */
 int get_char() {
     unsigned char status = inb(0x64);
     if ((status & 1) && ((status & 0x20) == 0)) {

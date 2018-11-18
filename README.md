@@ -1,11 +1,9 @@
-# Start developing OS-free!
-Have you ever dreamt of coding an absolutely platform-independent program?
-## Make C code that runs without OS!
-I am working on a framework that is to simplify C language development at low level.
-### History
-This is my 5th term course work on the "Operating Systems" subject at the [Department of Computer Science and Technologies](https://github.com/bmstu-iu9), [Bauman Moscow State Technical University](http://www.bmstu.ru/).
+### Disclaimer
+This is my 5th term coursework on the "Operating Systems" subject at the [Department of Computer Science and Technologies](https://github.com/bmstu-iu9), [Bauman Moscow State Technical University](http://www.bmstu.ru/).
 ### Brief description
-The main aim of the coursework is to implement native C libs' functions for I/O tasks (e.g., putchat, printf, gets, scanf) and memory layer (i.e., these are functions like malloc, free, and so on) so that every programmer could write C source code only (using standart libs) and finally get a complete bootable image executing the code. 
+The main aim is to get acquainted with principle of OS kernel operation at low level.
+As a sequence, develop minimal C libraries for I/O tasks (e.g., functions like putchat, printf, gets, scanf) and memory management (malloc, free, and so on).
+Finally, write an app demonstrating their efficiency.
 ### What is done by far
 - A minimal OS kernel supporting [Multiboot](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html) specification;
 - Embedding [grub2](https://www.gnu.org/software/grub/) bootloader;
@@ -17,8 +15,8 @@ The main aim of the coursework is to implement native C libs' functions for I/O 
 - Random functions: rand, srand, rtc_seed;
 - Example application: the Tetris game.
 ### How it actually works
-Project build with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/nexterot/develop-os-free/blob/master/Makefile) contains all the compiling and building logic. Here are main steps:
-1. Kernel compilation (32 bit);
+Project building with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/nexterot/develop-os-free/blob/master/Makefile) contains all the logic. Here are main steps:
+1. Kernel compilation from C source (32 bit);
 2. Disk image creation and partitioning (using ext2 filesystem);
 3. Installing grub into image via grub-install tool;
 4. Embedding kernel into image.
@@ -62,11 +60,11 @@ spam@eggs:~$ make run
 losetup: bin/disk.img: failed to set up loop device: Device or resource busy
 ```
 #### Solution:<br>
-Look up busy loop devices:
+Find busy loop devices:
 ```bash
 spam@eggs:~$ losetup -a
 ```
-Then edit these lines in Makefile, changing '/dev/loop2' or '/dev/loop3' to a free loop device:
+Then edit next lines in Makefile, changing '/dev/loop2' or\and '/dev/loop3' to any free loop device:
 ```
 loop_first  = /dev/loop2
 loop_second = /dev/loop3

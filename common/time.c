@@ -28,7 +28,7 @@ static void delay_short(unsigned int x) {
         if (t < TIME) {
             break;
         }
-        key_polling();
+        key_poll();
 	}
 }
 

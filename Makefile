@@ -28,10 +28,10 @@ bin/kernel.bin: $(OBJFILES)
 	@$(LD) -T linker.ld -o $@ $^ $(LFLAGS) 1>/dev/null
 bin/disk.img:   
 	@echo "Creating image..."
-	@dd if=/dev/zero of=$@ bs=512 count=131072 status=none
+	@dd if=/dev/zero of=$@ bs=512 count=16384 status=none
 	
 	@echo "Creating partition table..."
-	@(echo n; echo p; echo 1; echo 2048; echo 131071; echo a; echo w;) | fdisk $@ 1>/dev/null
+	@(echo n; echo p; echo 1; echo 2048; echo 16383; echo a; echo w;) | fdisk $@ 1>/dev/null
 	
 	@echo "Creating ex2 filesystem..."
 	@sudo losetup $(loop_second) $@ -o 1048576 
