@@ -30,9 +30,6 @@
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
 
-/* O,I,J,L,Z,S,T = 7 bricks */
-#define NUM_BRICKS 3    /* currently 3/7 implemented */
-
 /* ASCII chars used in game */
 #define BRICK_CHAR  '#'
 #define EMPTY_CHAR  ' '   
@@ -43,26 +40,29 @@
  * All possible bricks and their positions.
  * Suffix "_n" means rotated clockwise by n degrees.
  */
-enum BrickType {
-    O,
+#define NUM_POS 19
+#define NUM_BRICKS 7
+ 
+enum BrickPos {
     I,
-    I_90,   /* implemented up to this */
+    I_90,
     J,
-    L,
-    Z,
-    S,
-    T,
     J_90,
     J_180,
     J_270,
+    L,
     L_90,
     L_180,
     L_270,
-    Z_90,
+    O,
+    S,
     S_90,
+    T,
     T_90,
     T_180,
-    T_270
+    T_270,
+    Z,
+    Z_90,
 };
 
 /*
@@ -75,7 +75,7 @@ enum BrickType {
 struct Brick {
     int x, y;
     int next_x, next_y;
-    enum BrickType type;
+    enum BrickPos type;
 };
 
 /* game field */
@@ -188,7 +188,7 @@ void game_update() {
     switch (brick->type) {
     case O:
         /* check boundary */
-        if (brick->next_x >= FIELD_WIDTH - 1) {
+        if (brick->next_x > FIELD_WIDTH - 2) {
             brick->next_x = FIELD_WIDTH - 2;
         }
         if (brick->next_x < 0) {
@@ -269,6 +269,454 @@ void game_update() {
         draw_I_90(brick->x, brick->y, EMPTY_CHAR);
         /* draw brick at next pos */
         draw_I_90(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case J:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+2] == OTHER_CHAR || 
+                        field[brick->next_x][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_J(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_J(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_J(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case J_90:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+2][brick->next_y+1] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_J_90(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_J_90(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_J_90(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case J_180:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                    field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_J_180(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_J_180(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_J_180(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+     case J_270:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                    field[brick->next_x+2][brick->next_y] == OTHER_CHAR || 
+                        field[brick->next_x][brick->next_y+1] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_J_270(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_J_270(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_J_270(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case L:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x][brick->next_y+2] == OTHER_CHAR || 
+                        field[brick->next_x+1][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_L(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_L(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_L(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case L_90:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                    field[brick->next_x+2][brick->next_y] == OTHER_CHAR || 
+                        field[brick->next_x+2][brick->next_y+1] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_L_90(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_L_90(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_L_90(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case L_180:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+1][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_L_180(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_L_180(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_L_180(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+     case L_270:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+2][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+2][brick->next_y] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_L_270(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_L_270(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_L_270(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case S:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+2][brick->next_y] == OTHER_CHAR || 
+                    field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_S(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_S(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_S(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case S_90:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+1][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_S_90(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_S_90(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_S_90(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case Z:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+2][brick->next_y+1] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_Z(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_Z(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_Z(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case Z_90:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_Z_90(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_Z_90(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_Z_90(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case T:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                    field[brick->next_x+2][brick->next_y] == OTHER_CHAR || 
+                        field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_T(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_T(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_T(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case T_90:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+1][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_T_90(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_T_90(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_T_90(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case T_180:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 3) {
+            brick->next_x = FIELD_WIDTH - 3;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x+2][brick->next_y+1] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 1) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_T_180(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_T_180(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_T_180(brick->next_x, brick->next_y, BRICK_CHAR);
+        break;
+    case T_270:
+        /* check boundary */
+        if (brick->next_x > FIELD_WIDTH - 2) {
+            brick->next_x = FIELD_WIDTH - 2;
+        }
+        if (brick->next_x < 0) {
+            brick->next_x = 0;
+        }
+        /* collision */
+        if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
+                field[brick->next_x][brick->next_y+1] == OTHER_CHAR || 
+                    field[brick->next_x+1][brick->next_y+1] == OTHER_CHAR || 
+                        field[brick->next_x][brick->next_y+2] == OTHER_CHAR ||
+                            brick->next_y >= FIELD_HEIGHT - 2) 
+        {
+            if (brick->x != brick->next_x) {
+                brick->next_x = brick->x;
+                return;
+            }
+            draw_T_270(brick->x, brick->y, OTHER_CHAR);
+            brick_spawn();
+            return;
+        }
+        /* delete brick at prev pos */
+        draw_T_270(brick->x, brick->y, EMPTY_CHAR);
+        /* draw brick at next pos */
+        draw_T_270(brick->next_x, brick->next_y, BRICK_CHAR);
         break;
     }
     brick->x = brick->next_x;
@@ -417,7 +865,7 @@ void brick_gravity_fall() {
  * Creates new random brick at the middle of top of game field.
  */
 void brick_spawn() {
-    brick->type = (rand()) % NUM_BRICKS;
+    brick->type = (rand()) % NUM_POS;
     brick->x = FIELD_WIDTH / 2;
     brick->y = 0;
     brick->next_x = brick->x;
@@ -445,13 +893,173 @@ void draw_I_90(int x, int y, char c) {
 }
 
 /*
+ * Prints brick of type J with top-left corner at (x,y) with char c.
+ */
+void draw_J(int x, int y, char c) {
+    field[x+1][y] = c;
+    field[x+1][y+1] = c;
+    field[x+1][y+2] = c;
+    field[x][y+2] = c;    
+}
+
+/*
+ * Prints brick of type J_90 with top-left corner at (x,y) with char c.
+ */
+void draw_J_90(int x, int y, char c) {
+    field[x][y] = c;
+    field[x][y+1] = c;
+    field[x+1][y+1] = c;
+    field[x+2][y+1] = c;    
+}
+
+/*
+ * Prints brick of type J_180 with top-left corner at (x,y) with char c.
+ */
+void draw_J_180(int x, int y, char c) {
+    field[x][y] = c;
+    field[x+1][y] = c;
+    field[x][y+1] = c;
+    field[x][y+2] = c;    
+}
+
+/*
+ * Prints brick of type J_270 with top-left corner at (x,y) with char c.
+ */
+void draw_J_270(int x, int y, char c) {
+    field[x][y] = c;
+    field[x+1][y] = c;
+    field[x+2][y] = c;
+    field[x][y+1] = c;    
+}
+
+/*
+ * Prints brick of type L with top-left corner at (x,y) with char c.
+ */
+void draw_L(int x, int y, char c) {
+    field[x][y] = c;
+    field[x][y+1] = c;
+    field[x][y+2] = c;
+    field[x+1][y+2] = c;    
+}
+
+/*
+ * Prints brick of type L_90 with top-left corner at (x,y) with char c.
+ */
+void draw_L_90(int x, int y, char c) {
+    field[x][y] = c;
+    field[x+1][y] = c;
+    field[x+2][y] = c;
+    field[x+2][y+1] = c;   
+}
+
+/*
+ * Prints brick of type L_180 with top-left corner at (x,y) with char c.
+ */
+void draw_L_180(int x, int y, char c) {
+    field[x][y] = c;
+    field[x+1][y] = c;
+    field[x+1][y+1] = c;
+    field[x+1][y+2] = c;    
+}
+
+/*
+ * Prints brick of type L_270 with top-left corner at (x,y) with char c.
+ */
+void draw_L_270(int x, int y, char c) {
+    field[x][y+1] = c;
+    field[x+1][y+1] = c;
+    field[x+2][y+1] = c;
+    field[x+2][y] = c;    
+}
+
+/*
  * Prints brick of type O with top-left corner at (x,y) with char c.
  */
 void draw_O(int x, int y, char c) {
     field[x][y] = c;
     field[x+1][y] = c;
     field[x][y+1] = c;
+    field[x+1][y+1] = c; 
+}
+
+/*
+ * Prints brick of type S with top-left corner at (x,y) with char c.
+ */
+void draw_S(int x, int y, char c) {
+    field[x+1][y] = c;
+    field[x+2][y] = c;
+    field[x][y+1] = c;
+    field[x+1][y+1] = c; 
+}
+
+/*
+ * Prints brick of type S_90 with top-left corner at (x,y) with char c.
+ */
+void draw_S_90(int x, int y, char c) {
+    field[x][y] = c;
+    field[x][y+1] = c;
     field[x+1][y+1] = c;
+    field[x+1][y+2] = c; 
+}
+
+/*
+ * Prints brick of type Z with top-left corner at (x,y) with char c.
+ */
+void draw_Z(int x, int y, char c) {
+    field[x][y] = c;
+    field[x+1][y] = c;
+    field[x+1][y+1] = c;
+    field[x+2][y+1] = c; 
+}
+
+/*
+ * Prints brick of type Z_90 with top-left corner at (x,y) with char c.
+ */
+void draw_Z_90(int x, int y, char c) {
+    field[x+1][y] = c;
+    field[x][y+1] = c;
+    field[x+1][y+1] = c;
+    field[x][y+2] = c; 
+}
+
+/*
+ * Prints brick of type T with top-left corner at (x,y) with char c.
+ */
+void draw_T(int x, int y, char c) {
+    field[x][y] = c;
+    field[x+1][y] = c;
+    field[x+2][y] = c;
+    field[x+1][y+1] = c; 
+}
+
+/*
+ * Prints brick of type T_90 with top-left corner at (x,y) with char c.
+ */
+void draw_T_90(int x, int y, char c) {
+    field[x+1][y] = c;
+    field[x][y+1] = c;
+    field[x+1][y+1] = c;
+    field[x+1][y+2] = c; 
+}
+
+/*
+ * Prints brick of type T_180 with top-left corner at (x,y) with char c.
+ */
+void draw_T_180(int x, int y, char c) {
+    field[x+1][y] = c;
+    field[x][y] = c;
+    field[x][y+1] = c;
+    field[x][y+2] = c; 
+}
+
+/*
+ * Prints brick of type T_270 with top-left corner at (x,y) with char c.
+ */
+void draw_T_270(int x, int y, char c) {
+    field[x][y] = c;
+    field[x][y+1] = c;
+    field[x+1][y+1] = c;
+    field[x][y+2] = c; 
 }
 
 /*
