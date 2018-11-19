@@ -1067,7 +1067,7 @@ void draw_T_180(int x, int y, char c) {
     field[x+1][y] = c;
     field[x][y+1] = c;
     field[x+1][y+1] = c;
-    field[x+2][y+2] = c; 
+    field[x+2][y+1] = c; 
 }
 
 /*
