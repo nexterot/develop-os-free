@@ -11,8 +11,9 @@
  *  Completed rows (consist only of '@' chars) are immediately deleted.
  * 
  *  Controls:
- *  ESC         - pause
+ *  ESC         - pause/resume
  *  Arrow DOWN  - fall faster
+ *  Arrow UP    - fall immediately;
  *  Arrow LEFT  - move left
  *  Arrow RIGHT - move right
  */
@@ -49,17 +50,17 @@ enum BrickPos {
     J,
     J_90,
     J_180,
-    J_270,
+    J_270, // 5
     L,
     L_90,
     L_180,
     L_270,
-    O,
+    O, // 10
     S,
     S_90,
     T,
     T_90,
-    T_180,
+    T_180, // 15
     T_270,
     Z,
     Z_90,
@@ -93,7 +94,7 @@ int rows_completed = 0;
 
 void game_init();
 void game_run();
-void game_update();
+char game_update();
 void game_end();
 
 void video_update();
@@ -136,6 +137,7 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
  */
 void game_init() {
     clear_screen();
+    key_buffer_clear();
     field = malloc(FIELD_WIDTH * sizeof(char*));
     for (int i = 0; i < FIELD_WIDTH; i++) {
         field[i] = malloc(FIELD_HEIGHT * sizeof(char));
@@ -182,8 +184,9 @@ void game_run() {
  * Updates brick position to (next_x, next_y) if were no collisions.
  * Otherwise creates new brick.
  * Calls check for completed rows.
+ * Returns 1 if brick stuck else 0.
  */
-void game_update() {
+char game_update() {
     /* delete brick at prev pos */
     switch (brick->type) {
     case O:
@@ -203,11 +206,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_O(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_O(brick->x, brick->y, EMPTY_CHAR);
@@ -231,11 +234,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_I(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_I(brick->x, brick->y, EMPTY_CHAR);
@@ -259,11 +262,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_I_90(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_I_90(brick->x, brick->y, EMPTY_CHAR);
@@ -287,11 +290,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_J(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_J(brick->x, brick->y, EMPTY_CHAR);
@@ -315,11 +318,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_J_90(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_J_90(brick->x, brick->y, EMPTY_CHAR);
@@ -343,11 +346,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_J_180(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_J_180(brick->x, brick->y, EMPTY_CHAR);
@@ -366,16 +369,16 @@ void game_update() {
         if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
                 field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
                     field[brick->next_x+2][brick->next_y] == OTHER_CHAR || 
-                        field[brick->next_x][brick->next_y+1] == OTHER_CHAR ||
+                        field[brick->next_x+2][brick->next_y+1] == OTHER_CHAR ||
                             brick->next_y >= FIELD_HEIGHT - 1) 
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_J_270(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_J_270(brick->x, brick->y, EMPTY_CHAR);
@@ -399,11 +402,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_L(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_L(brick->x, brick->y, EMPTY_CHAR);
@@ -427,11 +430,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_L_90(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_L_90(brick->x, brick->y, EMPTY_CHAR);
@@ -455,11 +458,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_L_180(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_L_180(brick->x, brick->y, EMPTY_CHAR);
@@ -483,11 +486,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_L_270(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_L_270(brick->x, brick->y, EMPTY_CHAR);
@@ -511,11 +514,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_S(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_S(brick->x, brick->y, EMPTY_CHAR);
@@ -539,11 +542,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_S_90(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_S_90(brick->x, brick->y, EMPTY_CHAR);
@@ -567,11 +570,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_Z(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_Z(brick->x, brick->y, EMPTY_CHAR);
@@ -595,11 +598,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_Z_90(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_Z_90(brick->x, brick->y, EMPTY_CHAR);
@@ -623,11 +626,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_T(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_T(brick->x, brick->y, EMPTY_CHAR);
@@ -651,11 +654,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_T_90(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_T_90(brick->x, brick->y, EMPTY_CHAR);
@@ -679,11 +682,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_T_180(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_T_180(brick->x, brick->y, EMPTY_CHAR);
@@ -707,11 +710,11 @@ void game_update() {
         {
             if (brick->x != brick->next_x) {
                 brick->next_x = brick->x;
-                return;
+                return 0;
             }
             draw_T_270(brick->x, brick->y, OTHER_CHAR);
             brick_spawn();
-            return;
+            return 1;
         }
         /* delete brick at prev pos */
         draw_T_270(brick->x, brick->y, EMPTY_CHAR);
@@ -722,6 +725,7 @@ void game_update() {
     brick->x = brick->next_x;
     brick->y = brick->next_y;
     rows_delete_completed();
+    return 0;
 }
 
 /*
@@ -733,7 +737,6 @@ void game_end() {
     arrow_down_pressed = 0;
     arrow_up_pressed = 0;
     rows_completed = 0;
-    
     for (int i = 0; i < FIELD_WIDTH; i++) {
         free(field[i], FIELD_HEIGHT * sizeof(char));
     }
@@ -763,6 +766,8 @@ void video_update() {
     }
     move_cursor(1, 1);
     printf("%d rows cleared", rows_completed);
+    move_cursor(70, 1);
+    printf(" %d ", brick->type);
 }
 
 /*
@@ -808,6 +813,7 @@ void pause_display() {
  * Keys:
  * ESC - displays pause;
  * Arrow DOWN - moves falling brick one pos lower;
+ * Arrow UP - move brick down immediately;
  * Arrow LEFT & Arrow RIGHT - moves brick left and right respectively.
  */
 void key_work() {
@@ -848,6 +854,18 @@ void key_work() {
                 }
             } else {
                 arrow_right_pressed = 0;
+            }
+        }
+        if (k == ARROW_UP) {
+            if (pressed) {
+                if (! arrow_up_pressed) {
+                    do {
+                        brick->next_y++;
+                    } while (game_update() == 0);
+                    arrow_up_pressed = 1;
+                }
+            } else {
+                arrow_up_pressed = 0;
             }
         }
         game_update();
@@ -929,7 +947,7 @@ void draw_J_270(int x, int y, char c) {
     field[x][y] = c;
     field[x+1][y] = c;
     field[x+2][y] = c;
-    field[x][y+1] = c;    
+    field[x+2][y+1] = c;    
 }
 
 /*
@@ -1047,9 +1065,9 @@ void draw_T_90(int x, int y, char c) {
  */
 void draw_T_180(int x, int y, char c) {
     field[x+1][y] = c;
-    field[x][y] = c;
     field[x][y+1] = c;
-    field[x][y+2] = c; 
+    field[x+1][y+1] = c;
+    field[x+2][y+2] = c; 
 }
 
 /*

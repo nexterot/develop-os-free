@@ -9,7 +9,7 @@
 
 /* key codes */ 
 enum KeyCode {
-    UNKNOWN ,
+    UNKNOWN,
     ARROW_UP,
     ARROW_DOWN,
     ARROW_LEFT,
@@ -17,6 +17,7 @@ enum KeyCode {
     ESCAPE,
 };
 
+void key_buffer_clear();
 void key_init();
 void key_poll();
 void key_decode(int *key, char *pressed);

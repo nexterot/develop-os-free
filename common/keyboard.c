@@ -56,6 +56,14 @@ void key_decode(int *key, char *pressed) {
 }
 
 /*
+ * Clears key buffer.
+ */
+void key_buffer_clear() {
+    ringstart = 0;
+    ringend = 0;
+}
+
+/*
  * Is called mainly from delay_short from time.c.
  * Stores key strokes to buffer every short time if using delay.
  */
