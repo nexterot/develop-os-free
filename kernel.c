@@ -56,7 +56,7 @@ enum BrickPos {
     L_90,
     L_180,
     L_270,
-    O, // 10
+    O, 	// 10
     S,
     S_90,
     T,
@@ -66,6 +66,8 @@ enum BrickPos {
     Z,
     Z_90,
 };
+
+char brick_types[NUM_BRICKS] = {I, J, L, O, S, T, Z};
 
 /* width of each brick */
 char brick_widths[NUM_POS] = {1, 4, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2};
@@ -81,6 +83,7 @@ struct Brick {
     int x, y;
     int next_x, next_y;
     enum BrickPos type;
+    enum BrickPos next_type;
 };
 
 /* game field */
@@ -161,6 +164,7 @@ void game_init() {
     }
     /* set current falling brick */
     brick = malloc(sizeof(struct Brick));
+    brick->next_type = brick_types[(rand()) % NUM_BRICKS];
     brick_spawn();
 }
 
@@ -430,7 +434,7 @@ char game_update() {
         if (field[brick->next_x][brick->next_y] == OTHER_CHAR || 
                 field[brick->next_x+1][brick->next_y] == OTHER_CHAR || 
                     field[brick->next_x+2][brick->next_y] == OTHER_CHAR || 
-                        field[brick->next_x+2][brick->next_y+1] == OTHER_CHAR ||
+                        field[brick->next_x][brick->next_y+1] == OTHER_CHAR ||
                             brick->next_y >= FIELD_HEIGHT - 1) 
         {
             if (brick->x != brick->next_x) {
@@ -781,9 +785,161 @@ void video_update() {
 	/* show score */
     move_cursor(1, 1);
     printf("Score: %d", rows_completed);
-    /* show brick type number */
-    move_cursor(65, 1);
-    printf("Brick type: %d ", brick->type);
+    /* show next brick */
+    move_cursor(73, 1);
+    puts("Next:");
+    move_cursor(72, 3);
+    for (int i = 0; i < 4; i++) {
+		puts("     ");
+		move_cursor_delta(-5, 1);
+	}
+	move_cursor(73, 3);
+    switch(brick->next_type) {
+	case I:
+		for (int i = 0; i < 4; i++) {
+			putchar(BRICK_CHAR);
+			move_cursor_delta(-1, 1);
+		}
+		break;
+	case I_90:
+		for (int i = 0; i < 4; i++) {
+			putchar(BRICK_CHAR);
+		}
+		break;
+	case J:
+		move_cursor_delta(0, 2);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, -1);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, -1);
+		putchar(BRICK_CHAR);
+		break;
+	case J_90:
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		break;
+	case J_180:
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		break;
+	case J_270:
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		break;	
+	case L:
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		break;
+	case L_90:
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-3, 1);
+		putchar(BRICK_CHAR);
+		break;
+	case L_180:
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);		
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		break;
+	case L_270:
+		move_cursor_delta(0, 1);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);		
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, -1);
+		putchar(BRICK_CHAR);
+		break;
+	case O:
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		break;
+	case S:
+		move_cursor_delta(1, 0);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-3, 1);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		break;
+	case S_90:
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		break;
+	case T:
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);		
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);
+		putchar(BRICK_CHAR);
+		break;
+	case T_90:
+		move_cursor_delta(0, 1);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);
+		putchar(BRICK_CHAR);		
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);
+		break;
+	case T_180:
+		move_cursor_delta(0, 1);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);
+		putchar(BRICK_CHAR);		
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		break;
+	case T_270:
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);
+		putchar(BRICK_CHAR);		
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);
+		putchar(BRICK_CHAR);
+		break;
+	case Z:
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-1, 1);				
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		break;
+	case Z_90:
+		move_cursor_delta(1, 0);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);				
+		putchar(BRICK_CHAR);
+		putchar(BRICK_CHAR);
+		move_cursor_delta(-2, 1);				
+		putchar(BRICK_CHAR);
+		break;
+	}
     /* show hints */
     move_cursor(1, 21);
     puts("Arrows: move");
@@ -832,9 +988,6 @@ void pause_display() {
     /* show score */
     move_cursor(1, 1);
     printf("Score: %d", rows_completed);
-    /* show brick type number */
-    move_cursor(65, 1);
-    printf("Brick type: %d ", brick->type);
     /* show hints */
     move_cursor(1, 21);
     puts("Arrows: move");
@@ -1280,7 +1433,8 @@ void brick_rotate() {
  * Creates new random brick at the middle of top of game field.
  */
 void brick_spawn() {
-    brick->type = (rand()) % NUM_POS;
+	brick->type = brick->next_type;
+    brick->next_type = brick_types[(rand()) % NUM_BRICKS];
     brick->x = FIELD_WIDTH / 2;
     brick->y = 0;
     brick->next_x = brick->x;
@@ -1364,7 +1518,7 @@ void draw_L_90(int x, int y, char c) {
     field[x][y] = c;
     field[x+1][y] = c;
     field[x+2][y] = c;
-    field[x+2][y+1] = c;   
+    field[x][y+1] = c;   
 }
 
 /*
