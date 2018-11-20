@@ -53,6 +53,7 @@ void key_decode(int *key, char *pressed) {
     if (c == 0x4b) *key = ARROW_LEFT;
     if (c == 0x4d) *key = ARROW_RIGHT;
     if (c == 0x50) *key = ARROW_DOWN;
+    if (c == 0x1c) *key = ENTER;
 }
 
 /*

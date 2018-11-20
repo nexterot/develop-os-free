@@ -14,6 +14,7 @@ enum KeyCode {
     ARROW_DOWN,
     ARROW_LEFT,
     ARROW_RIGHT,
+    ENTER,
     ESCAPE,
 };
 

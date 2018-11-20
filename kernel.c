@@ -16,6 +16,7 @@
  *  Arrow UP    - fall immediately;
  *  Arrow LEFT  - move left
  *  Arrow RIGHT - move right
+ *  Enter       - rotate clockwise
  */
 
 #include "include/multiboot.h"
@@ -88,6 +89,7 @@ char arrow_left_pressed = 0;
 char arrow_right_pressed = 0;
 char arrow_down_pressed = 0;
 char arrow_up_pressed = 0;
+char enter_pressed = 0;
 /* number of completed and deleted rows */
 int rows_completed = 0;
 
@@ -814,7 +816,8 @@ void pause_display() {
  * ESC - displays pause;
  * Arrow DOWN - moves falling brick one pos lower;
  * Arrow UP - move brick down immediately;
- * Arrow LEFT & Arrow RIGHT - moves brick left and right respectively.
+ * Arrow LEFT & Arrow RIGHT - moves brick left and right respectively;
+ * Enter - rotates brick clockwise.
  */
 void key_work() {
     int k = -1;
@@ -868,6 +871,16 @@ void key_work() {
                 arrow_up_pressed = 0;
             }
         }
+        if (k == ENTER) {
+            if (pressed) {
+                if (! enter_pressed) {
+                    brick_rotate();
+                    enter_pressed = 1;
+                }
+            } else {
+                enter_pressed = 0;
+            }
+        }
         game_update();
     }
 }
@@ -877,6 +890,349 @@ void key_work() {
  */
 void brick_gravity_fall() {
     brick->next_y++;
+}
+
+/*
+ * Rotates current falling brick.
+ */
+void brick_rotate() {
+	switch(brick->type) {
+	case I:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 3) {
+			return;
+		}
+		if (field[brick->x-1][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+1][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+2][brick->y+1] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_I(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = I_90;
+		brick->x = brick->x - 1;
+		brick->y = brick->y + 1;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_I_90(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case I_90:
+		if (brick->y <= 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y-1] == OTHER_CHAR ||
+			field[brick->x+1][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+1][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_I_90(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = I;
+		brick->x = brick->x + 1;
+		brick->y = brick->y - 1;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_I(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case J:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x][brick->y] == OTHER_CHAR ||
+			field[brick->x][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+2][brick->y+1] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_J(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = J_90;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_J_90(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case J_90:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y] == OTHER_CHAR ||
+			field[brick->x][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_J_90(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = J_180;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_J_180(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case J_180:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x+2][brick->y] == OTHER_CHAR ||
+			field[brick->x][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_J_180(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = J_270;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_J_270(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case J_270:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x][brick->y+2] == OTHER_CHAR ||
+			field[brick->x+1][brick->y+2] == OTHER_CHAR ||
+			field[brick->x+1][brick->y+1] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_J_270(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = J;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_J(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case L:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y] == OTHER_CHAR ||
+			field[brick->x+2][brick->y] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_L(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = L_90;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_L_90(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case L_90:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+1][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_L_90(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = L_180;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_L_180(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case L_180:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+2][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+2][brick->y] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_L_180(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = L_270;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_L_270(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case L_270:
+		if (brick->x <= 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+2][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+2][brick->y] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_L_270(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = L;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_L(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case O:
+		break;
+	case S:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x][brick->y] == OTHER_CHAR ||
+			field[brick->x+1][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_S(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = S_90;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_S_90(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case S_90:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y] == OTHER_CHAR ||
+			field[brick->x+2][brick->y] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_S_90(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = S;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_S(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case T:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y+1] == OTHER_CHAR ||
+			field[brick->x+2][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_T(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = T_90;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_T_90(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case T_90:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x+2][brick->y+1] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_T_90(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = T_180;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_T_180(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case T_180:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x][brick->y] == OTHER_CHAR ||
+			field[brick->x][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_T_180(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = T_270;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_T_270(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case T_270:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x+1][brick->y] == OTHER_CHAR ||
+			field[brick->x+2][brick->y] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_T_270(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = T;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_T(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case Z:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->y >= FIELD_HEIGHT - 2) {
+			return;
+		}
+		if (field[brick->x][brick->y+1] == OTHER_CHAR ||
+			field[brick->x][brick->y+2] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_Z(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = Z_90;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_Z_90(brick->x, brick->y, BRICK_CHAR);
+		break;
+	case Z_90:
+		if (brick->x < 0) {
+			return;
+		}
+		if (brick->x >= FIELD_WIDTH - 2) {
+			return;
+		}
+		if (field[brick->x][brick->y] == OTHER_CHAR ||
+			field[brick->x+2][brick->y+1] == OTHER_CHAR)
+		{
+			return;
+		}
+		draw_Z_90(brick->x, brick->y, EMPTY_CHAR);
+		brick->type = Z;
+		brick->next_x = brick->x;
+		brick->next_y = brick->y;
+		draw_Z(brick->x, brick->y, BRICK_CHAR);
+		break;
+	}
 }
 
 /*
