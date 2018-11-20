@@ -67,6 +67,9 @@ enum BrickPos {
     Z_90,
 };
 
+/* width of each brick */
+char brick_widths[NUM_POS] = {1, 4, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2};
+
 /*
  * Structure for current falling brick.
  * x, y: coordinates of most left and top char of the brick.
@@ -751,6 +754,7 @@ void game_end() {
  * Updates counter of cleared rows.
  */
 void video_update() {
+	/* show field */
     for (int i = 0; i < FIELD_HEIGHT; i++) {
         move_cursor(VGA_WIDTH/2 - FIELD_WIDTH/2, VGA_HEIGHT/2 - FIELD_HEIGHT/2 + i);
         for (int j = 0; j < FIELD_WIDTH; j++) {
@@ -766,10 +770,27 @@ void video_update() {
         move_cursor(VGA_WIDTH/2 + FIELD_WIDTH/2, VGA_HEIGHT/2 - FIELD_HEIGHT/2 + i);
         putchar(BORDER_CHAR);
     }
+    /* indicate where the brick will fall */
+    char len = brick_widths[brick->type];
+    move_cursor(VGA_WIDTH/2 - FIELD_WIDTH/2, 22);
+    puts("            ");
+    move_cursor(brick->x + VGA_WIDTH/2 - FIELD_WIDTH/2, 22);
+    for (char i = 0; i < len; i++) {
+		putchar('+');
+	}
+	/* show score */
     move_cursor(1, 1);
-    printf("%d rows cleared", rows_completed);
-    move_cursor(70, 1);
-    printf(" %d ", brick->type);
+    printf("Score: %d", rows_completed);
+    /* show brick type number */
+    move_cursor(65, 1);
+    printf("Brick type: %d ", brick->type);
+    /* show hints */
+    move_cursor(1, 21);
+    puts("Arrows: move");
+    move_cursor(1, 22);
+    puts("Enter: rotate");
+    move_cursor(1, 23);
+    puts("Esc: pause");
 }
 
 /*
@@ -789,9 +810,16 @@ char you_loose_check() {
  */
 void gameover_display() {
     clear_screen();
-    move_cursor(5, 5);
-    puts("game over! starting new game after 5 seconds...");
-    sleeps(5);
+    move_cursor(25, 10);
+    printf("game over! you scored %d", rows_completed);
+    move_cursor(25, 11);
+    printf("press ENTER to start another game...");
+    int k = 0;
+    char pressed = 0;
+    while (! (k == ENTER && pressed)) {
+        key_decode(&k, &pressed);
+        delay(SECOND / 50);
+    }
 }
 
 /*
@@ -799,8 +827,21 @@ void gameover_display() {
  */
 void pause_display() {
     clear_screen();
-    move_cursor(5, 5);
+    move_cursor(25, 11);
     puts("paused... press ESC to return to game...");
+    /* show score */
+    move_cursor(1, 1);
+    printf("Score: %d", rows_completed);
+    /* show brick type number */
+    move_cursor(65, 1);
+    printf("Brick type: %d ", brick->type);
+    /* show hints */
+    move_cursor(1, 21);
+    puts("Arrows: move");
+    move_cursor(1, 22);
+    puts("Enter: rotate");
+    move_cursor(1, 23);
+    puts("Esc: pause");
     int k = 0;
     char pressed = 0;
     while (! (k == ESCAPE && pressed)) {
