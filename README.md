@@ -1,8 +1,8 @@
 ### Description
 This is my 5th term coursework on the "Operating Systems" subject at the [Department of Computer Science and Technologies](https://github.com/bmstu-iu9), [Bauman Moscow State Technical University](http://www.bmstu.ru/).<br>
-The main aim is to get acquainted with principle of OS kernel operation at low level.
+The main aim is to get acquainted with principle of OS kernel operation at low level. 
 As a sequence, develop minimal C libraries for I/O tasks (e.g., functions like putchat, printf, gets, scanf) and memory management (malloc, free, and so on).
-Finally, write an app demonstrating their efficiency.
+Finally, write an app demonstrating their efficiency. The coursework was evaluated in 5 points.
 ### How it actually works
 Project building with [Make](https://www.gnu.org/software/make/) tool. [Makefile](https://github.com/nexterot/develop-os-free/blob/master/Makefile) contains all the logic. Here are main steps:
 1. Kernel compilation from C source (32 bit);
