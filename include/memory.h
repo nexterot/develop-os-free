@@ -26,7 +26,7 @@ typedef struct free_zone {
 
 void mem_init(multiboot_info_t* mbd); /* should be called from main */
 void* malloc(size_t size);
-void free(void* ptr, unsigned int size);
+void free(void* ptr);
 
 void mem_debug(); /* prints sectors of free memory */
 

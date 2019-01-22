@@ -747,10 +747,10 @@ void game_end() {
     arrow_up_pressed = 0;
     rows_completed = 0;
     for (int i = 0; i < FIELD_WIDTH; i++) {
-        free(field[i], FIELD_HEIGHT * sizeof(char));
+        free(field[i]);
     }
-    free(field, FIELD_WIDTH * sizeof(char*));
-    free(brick, sizeof(struct Brick));
+    free(field);
+    free(brick);
 }
 
 /*

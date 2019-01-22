@@ -180,7 +180,7 @@ static void merge_contiguous_zones() {
  * Allocates N >='size' bytes and returns pointer to them. 
  * N is the first integer after 'size' divided by MIN_BLOCK.
  */
-void* malloc(size_t size) {
+void* malloc2(size_t size) {
     if (mem_base == NULL || mem_end == NULL || size <= 0) {
         return NULL;
     }
@@ -203,7 +203,7 @@ void* malloc(size_t size) {
         return find_in_list(size);
     }
     /* for sufficient first allocations */
-    void* copy = mem_base;
+    void *copy = mem_base;
     mem_base += size;
     delete_from_list((free_zone_t*)copy);   
     /* don't create watermarks if all memory used */
@@ -222,12 +222,18 @@ void* malloc(size_t size) {
     return copy;
 }
 
+void* malloc(size_t size) {
+    char *p = malloc2(sizeof(size_t) + size);
+    *(size_t*)p = size;
+    return p + sizeof(size_t);
+}
+
 /*
  * Frees allocated memory at 'ptr' of size 'size'. 
  * Size argument is needed for the algorithm.
  * CAREFUL: calling on unallocated block gets undefined behavior.
- */
-void free(void* ptr, unsigned int size) {
+ */ 
+void free2(void* ptr, unsigned int size) {
     /* increment size to divide 16 */
     unsigned int r = size % MIN_BLOCK;
     if (r > 0) {
@@ -261,6 +267,12 @@ void free(void* ptr, unsigned int size) {
         z = z->next_zone;
     }
     */
+}
+
+void free(void *p) {
+    char *c = p;
+    size_t size = *(size_t*)(c - sizeof(size_t));
+    free2(c - sizeof(size_t), size);
 }
 
 /*
