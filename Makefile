@@ -5,8 +5,8 @@ CFLAGS      = -Wall -fno-builtin -nostdinc -nostdlib -m32
 LFLAGS      = -m elf_i386
 ASFLAGS     = -32
 
-loop_first  = /dev/loop7
-loop_second = /dev/loop8
+loop_first  = /dev/loop9
+loop_second = /dev/loop10
 
 OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o kernel.o common/sys.o common/time.o common/memory.o common/keyboard.o
 
