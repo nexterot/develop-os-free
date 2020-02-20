@@ -10,23 +10,23 @@
 #include "cursor.h"
 #include "time.h"
 #include "keyboard.h"
+
+#include "forth/lexer.h"
+#include "forth/parser.h"
  
-void run();
- 
-/*  
- * Entry point accessed from 'loader.s'. 
- */
+
 void main(multiboot_info_t* mbd, unsigned int magic) {   
     mem_init(mbd);
     key_init();
     rtc_seed();
-	run();
-}
-
-void run() {
-	char buff[256];
+    
+    Lexer lex;
+    Parser prs;
+    
+	Token t;
 	for (;;) {
-		gets(&buff);
-		putchar('\n');
+		next_token(&lex, &t);
+		print_token(&t);
+		delete_token(&t);
 	}
 }
