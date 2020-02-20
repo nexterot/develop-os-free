@@ -5,37 +5,45 @@
 #include "lexer.h"
 
 /* Lexer methods */
-void next_token(Lexer* l, Token* t) {
-	char buff[256];
-	int i;
+Token* next_token(Lexer* l, char* buff, int* buff_shift) {
+	int b_shift = *buff_shift;
 	char only_digits = 1;
 	char only_alphas = 1;
-	for (i = 0; i < 256; i++) {
-		char c = getchar();
-		if (c == '\n' || c == ' ') {
+	int i;
+	for (i = 0; b_shift+i < LINE_BUFFER_SIZE; i++, (*buff_shift)++) {
+		char c = buff[b_shift+i];
+		if (c == ' ' || c == '\t') {
 			break;
 		}
-		putchar(c);
+		if (c == '\n' || c == '\0') {
+			if (i == 0) {
+				return NULL;
+			}
+			break;
+		}
+		//putchar(c);
 		if (!is_digit(c)) only_digits = 0;
 		if (!is_alpha(c)) only_alphas = 0;
-		if (is_lower(c)) c = to_upper(c);
-		buff[i] = c;
+		if (is_lower(c)) buff[b_shift+i] = to_upper(c);
 	}
-	putchar('\n');
+	//putchar('\n');
+	Token* t = (Token*) malloc(sizeof(Token));
 	t->value = (char*)malloc((i+1) * sizeof(char));
 	for (int j = 0; j < i; j++) {
-		t->value[j] = buff[j];
+		t->value[j] = buff[b_shift+j];
 	}
 	t->value[i] = '\0';
 	t->value_len = i;
-	if (only_digits) {
-		t->type = INT;
+	if (t->value_len == 0)  {
+		t->type = EMPTY;
 	} else if (str_cmp(t->value, "DUP")) {
 		t->type = WORD_DUP;
 	} else if (str_cmp(t->value, "DROP")) {
 		t->type = WORD_DROP;
 	} else if (str_cmp(t->value, "SWAP")) {
 		t->type = WORD_SWAP;
+	} else if (str_cmp(t->value, "CL")) {
+		t->type = WORD_CL;
 	} else if (str_cmp(t->value, "+")) {
 		t->type = OP_PLUS;
 	} else if (str_cmp(t->value, "-")) {
@@ -50,10 +58,21 @@ void next_token(Lexer* l, Token* t) {
 		t->type = OP_LAST;		
 	} else if (only_alphas) {
 		t->type = WORD;	
+	} else if (only_digits) {
+		t->type = INT;
+		t->int_value = atoi(t->value);
 	} else {
 		t->type = INVALID;
 	}
+	return t;
 }
+
+void skip_spaces(char *buff, int* buff_shift) {
+	while (is_space(buff[*buff_shift])) {
+		(*buff_shift)++;
+	}
+}
+
 
 /* Token methods */
 void print_token(Token* t) {
@@ -69,6 +88,9 @@ void print_token(Token* t) {
 		break;
 	case WORD_SWAP:
 		puts("WORD_SWAP ");
+		break;
+	case WORD_CL:
+		puts("WORD_CL ");
 		break;
 	case OP_PLUS:
 		puts("OP_PLUS ");
@@ -91,13 +113,26 @@ void print_token(Token* t) {
 	case WORD:
 		puts("WORD ");
 		break;
-	default:
+	case INVALID:
 		puts("INVALID ");
+		break;
+	case EMPTY:
+		puts("EMPTY ");
+		break;
+	default:
+		puts("unrecognized token ");
 	}
-	for (int i = 0; i < t->value_len; i++) {
-		putchar(t->value[i]);
+	puts(t->value);
+}
+
+void print_token_value(Token* t) {
+	switch(t->type) {
+	case INT:
+		printf("%d ", t->int_value);
+		break;
+	default:
+		puts("INVALID TOKEN");
 	}
-	putchar('\n');
 }
 
 void delete_token(Token* t) {
@@ -132,4 +167,18 @@ char str_cmp(char *s1, const char *s2) {
 		i++;
 	} while (c2 != '\0');
 	return 1;
+}
+
+
+char is_space(char c) {
+	return c == ' ' || c == '\t';
+}
+
+int atoi(const char* str) {
+	int k = 0;
+	while (*str) {
+		k = 10 * k + (*str) - '0';
+		str++;
+	}
+	return k;
 }

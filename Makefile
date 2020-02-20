@@ -8,7 +8,7 @@ ASFLAGS     = -32
 loop_first  = /dev/loop9
 loop_second = /dev/loop10
 
-CUSTOMFILES = forth/lexer.o
+CUSTOMFILES = forth/lexer.o forth/stack.o forth/parser.o
 OBJFILES = loader.o common/printf.o common/screen.o common/cursor.o $(CUSTOMFILES) kernel.o common/sys.o common/time.o common/memory.o common/keyboard.o
 
 .PHONY: all run clean rebuild

@@ -106,6 +106,9 @@ char* gets(char* s) {
     char c;
     int i = 0;
     while ((c = getchar()) != '\n') {
+		if (c == '\b') {
+			continue;
+		}
         putchar(c);
         s[i++] = c;
     }

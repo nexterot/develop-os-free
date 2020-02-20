@@ -7,6 +7,7 @@
 
 #include "multiboot.h"
 #include "types.h"
+#include "printf.h"
 
 /*
  * A block of free memory represented as a node in double-linked list.
