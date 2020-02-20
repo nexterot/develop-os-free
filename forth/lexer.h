@@ -10,11 +10,16 @@ typedef struct lexer Lexer;
 enum token_type {
 	INT,
 	WORD,
+	WORD_DUP,
+	WORD_DROP,
+	WORD_SWAP,
 	OP_PLUS,
 	OP_MINUS,
 	OP_MUL,
 	OP_DIV,
 	OP_MOD,
+	OP_LAST,
+	INVALID,
 };
 typedef enum token_type TOKEN_TYPE;
 
@@ -35,3 +40,7 @@ void delete_token(Token* t);
 
 /* Extra */
 char is_digit(char c);
+char is_lower(char c);
+char is_alpha(char c);
+char to_upper(char c);
+char str_cmp(char *s1, const char *s2);
