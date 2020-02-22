@@ -21,7 +21,7 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
     key_init();
     rtc_seed();
     
-    Lexer lex;
+    Lexer* lex = new_lexer();
     Parser prs;
     Stack st;
     
@@ -36,7 +36,13 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
 		putchar('\n');
 		Token* t;
 		skip_spaces(buff, &i);
-		while (t = next_token(&lex, buff, &i)) {
+		while ((t = next_token(lex, buff, &i))) {
+			if (t->type == INVALID) {
+				puts("syntax error: ");
+				print_token_value(t);
+				putchar('\n');
+				break;
+			}
 			skip_spaces(buff, &i);
 			tokens[j++] = t;
 		}

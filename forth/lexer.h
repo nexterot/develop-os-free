@@ -11,12 +11,21 @@
 #define LINE_BUFFER_SIZE 256
 #define TOKENS_BUFFER_SIZE 128
  
+enum LEXER_STATE {
+	LEXER_STATE_INIT,
+	LEXER_STATE_INT,
+	LEXER_STATE_WORD,
+	LEXER_STATE_MINUS,
+	LEXER_STATE_OP,
+};
+ 
 /* Lexer */
-struct lexer{};
-typedef struct lexer Lexer;
+typedef struct lexer{
+	enum LEXER_STATE state;
+} Lexer;
 
 /* TOKEN_TYPE */
-enum token_type {
+enum TOKEN_TYPE {
 	INT,
 	WORD,
 	WORD_DUP,
@@ -32,18 +41,17 @@ enum token_type {
 	INVALID,
 	EMPTY,
 };
-typedef enum token_type TOKEN_TYPE;
 
  /* Token */
-struct token{
+typedef struct token{
 	 int int_value;
 	 char* value;
 	 unsigned int value_len;
-	 TOKEN_TYPE type;
-};
-typedef struct token Token;
+	 enum TOKEN_TYPE type;
+} Token;
 
 /* Lexer methods */
+Lexer* new_lexer();
 Token* next_token(Lexer* l, char* buff, int* buff_shift);
 void skip_spaces(char *buff, int* buff_shift);
 
@@ -51,6 +59,8 @@ void skip_spaces(char *buff, int* buff_shift);
 void print_token(Token* t);
 void print_token_value(Token* t);
 void delete_token(Token* t);
+Token* new_token();
+Token* copy_token(Token* t);
 
 /* Extra */
 char is_digit(char c);
@@ -60,5 +70,5 @@ char to_upper(char c);
 char str_cmp(char *s1, const char *s2);
 char is_space(char c);
 int atoi(const char* str);
-
+void* memcpy(void* destptr, const void* srcptr, size_t num);
 #endif

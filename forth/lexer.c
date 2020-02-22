@@ -4,7 +4,15 @@
  
 #include "lexer.h"
 
+int token_err = 0;
+
 /* Lexer methods */
+Lexer* new_lexer() {
+	Lexer* l = (Lexer*) malloc(sizeof(Lexer));	
+	l->state = LEXER_STATE_INIT;
+	return l;
+}
+
 Token* next_token(Lexer* l, char* buff, int* buff_shift) {
 	int b_shift = *buff_shift;
 	char only_digits = 1;
@@ -21,12 +29,15 @@ Token* next_token(Lexer* l, char* buff, int* buff_shift) {
 			}
 			break;
 		}
-		//putchar(c);
-		if (!is_digit(c)) only_digits = 0;
+		if (c == '-') {
+			if (i > 0) {
+				break;
+			}
+		}
+		if (c != '-' && !is_digit(c)) only_digits = 0;
 		if (!is_alpha(c)) only_alphas = 0;
 		if (is_lower(c)) buff[b_shift+i] = to_upper(c);
 	}
-	//putchar('\n');
 	Token* t = (Token*) malloc(sizeof(Token));
 	t->value = (char*)malloc((i+1) * sizeof(char));
 	for (int j = 0; j < i; j++) {
@@ -130,15 +141,83 @@ void print_token_value(Token* t) {
 	case INT:
 		printf("%d ", t->int_value);
 		break;
+	case WORD_DUP:
+	case WORD_DROP:
+	case WORD_SWAP:
+	case WORD_CL:
+	case OP_PLUS:
+	case OP_MINUS:
+	case OP_MUL:
+	case OP_DIV:
+	case OP_MOD:
+	case OP_LAST:
+	case WORD:
+	case INVALID:
+	case EMPTY:
 	default:
-		puts("INVALID TOKEN");
+		puts(t->value);
 	}
 }
 
-void delete_token(Token* t) {
-	free(t->value);
+Token* new_token() {
+	return (Token*) malloc(sizeof(Token));
 }
 
+Token* copy_token(Token* t) {
+	Token* t2 = new_token();
+	t2->type = t->type;
+	switch(t->type) {
+	case INT:
+		t2->int_value = t->int_value;
+		break;
+	case WORD_DUP:
+	case WORD_DROP:
+	case WORD_SWAP:
+	case WORD_CL:
+	case OP_PLUS:
+	case OP_MINUS:
+	case OP_MUL:
+	case OP_DIV:
+	case OP_MOD:
+	case OP_LAST:
+	case WORD:
+		t2->value = (char*)malloc((t->value_len+1) * sizeof(char));
+		memcpy(t2->value, t->value, t->value_len);
+		t2->value_len = t->value_len;
+		break;
+	case INVALID:
+	case EMPTY:
+		break;
+	default:
+		break;
+	}
+	return t2;
+}
+
+void delete_token(Token* t) {
+	switch(t->type) {
+	case INT:
+		break;
+	case WORD_DUP:
+	case WORD_DROP:
+	case WORD_SWAP:
+	case WORD_CL:
+	case OP_PLUS:
+	case OP_MINUS:
+	case OP_MUL:
+	case OP_DIV:
+	case OP_MOD:
+	case OP_LAST:
+	case WORD:
+		free(t->value);
+		break;
+	case INVALID:
+	case EMPTY:
+	default:
+		break;
+	}
+	free(t);
+}
 
 /* Extra */
 char is_digit(char c) {
@@ -175,10 +254,22 @@ char is_space(char c) {
 }
 
 int atoi(const char* str) {
+	int c = 1;
+	if (str[0] == '-') {
+		c = -1;
+		str++;
+	}
 	int k = 0;
 	while (*str) {
 		k = 10 * k + (*str) - '0';
 		str++;
 	}
-	return k;
+	return c * k;
+}
+
+void* memcpy(void* destptr, const void* srcptr, size_t num) {
+	for (size_t i = 0; i < num; i++) {
+		((char*)destptr)[i] = ((char*)srcptr)[i];
+	}
+	return destptr;
 }

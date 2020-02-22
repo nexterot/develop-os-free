@@ -24,3 +24,7 @@ Token* stack_pop(Stack *s) {
 	s->top--;
 	return s->data[s->top];
 }
+
+Token* stack_top(Stack *s) {
+	return s->data[s->top-1];
+}

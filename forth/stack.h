@@ -21,5 +21,6 @@ void init_stack(Stack *s, int n);
 char stack_empty(Stack *s);
 void stack_push(Stack *s, Token *t);
 Token* stack_pop(Stack *s);
+Token* stack_top(Stack *s);
 
 #endif
