@@ -12,151 +12,144 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 	while (has_next(p)) {
 		Token* t = next(p), *t1, *t2;
 		switch(t->type) {
-		case INT:
+		case TOKEN_INT:
 			stack_push(st, t);
 			break;
-		case WORD_DUP:
+		case TOKEN_DUP:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_top(st);
 			t2 = copy_token(t1);
 			stack_push(st, t2);
 			break;
-		case WORD_DROP:
+		case TOKEN_DROP:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			delete_token(t1);
 			break;
-		case WORD_SWAP:
+		case TOKEN_SWAP:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t2 = stack_pop(st);
 			stack_push(st, t1);
 			stack_push(st, t2);
 			break;
-		case WORD_CL:
+		case TOKEN_CL:
 			clear_screen();
 			return;
-		case WORD_ABS:
+		case TOKEN_ABS:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			t1->int_value = abs(t1->int_value);
 			stack_push(st, t1);
 			break;
-		case OP_PLUS:
+		case TOKEN_PLUS:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t2 = stack_pop(st);
 			t2->int_value += t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
-		case OP_MINUS:
+		case TOKEN_MINUS:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t2 = stack_pop(st);
 			t2->int_value -= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
-		case OP_MUL:
+		case TOKEN_MUL:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t2 = stack_pop(st);
 			t2->int_value *= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
-		case OP_DIV:
+		case TOKEN_DIV:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t2 = stack_pop(st);
 			t2->int_value /= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
-		case OP_MOD:
+		case TOKEN_MOD:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t2 = stack_pop(st);
 			t2->int_value %= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
-		case OP_LAST:
+		case TOKEN_DOT:
 			if (stack_empty(st)) {
-				puts("error: stack underflow\n");
-				return;
+				goto L_STACK_UNDERFLOW;
 			}
 			t1 = stack_pop(st);
 			print_token_value(t1);
 			delete_token(t1);
 			break;
-		case WORD:
+		case TOKEN_WORD:
+		case TOKEN_IF:
+		case TOKEN_ELSE:
+		case TOKEN_THEN:
+		case TOKEN_EQ:
+		case TOKEN_MORE:
+		case TOKEN_LESS:
+		case TOKEN_COLON:
+		case TOKEN_SEMICOLON:
 			break;
-		case EMPTY:
-			puts("error: empty token\n");
-			return;
-		case INVALID:
-			puts("error: invalid token\n");
-			return;
 		default:
-			puts("error: unrecognized lexem\n");
+			puts("error: unrecognized token\n");
 			print_token(t);
 			return;
 		}
 	}
-	puts("OK\n");
+	if (tokens_num > 0) {
+		puts("OK\n");
+	}
+	return;
+	
+L_STACK_UNDERFLOW:
+	puts("error: stack underflow\n");
+	return;
 }
 
 Token* next(Parser* p) {

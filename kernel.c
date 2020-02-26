@@ -35,17 +35,20 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
 		gets(buff);
 		putchar('\n');
 		Token* t;
-		skip_spaces(buff, &i);
-		while ((t = next_token(lex, buff, &i))) {
-			if (t->type == INVALID) {
-				puts("syntax error: ");
-				print_token_value(t);
-				putchar('\n');
-				break;
-			}
+		while (buff[i] != '\0') {
 			skip_spaces(buff, &i);
+			if (buff[i] == '\0') break;
+			t = next_token(lex, buff, &i);
+			//puts("\ntoken: ");
+			//print_token(t);
+			if (t == NULL) {
+				puts("syntax error\n");
+				skip(buff, &i);
+				continue;
+			}
 			tokens[j++] = t;
 		}
+		//printf("\nj = %d\n", j);
 		parse(&prs, &st, tokens, j);
 	}
 }
