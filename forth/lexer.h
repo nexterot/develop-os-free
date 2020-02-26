@@ -12,7 +12,7 @@
 #define TOKENS_BUFFER_SIZE 128
  
 enum LEXER_STATE {
-	LEXER_STATE_INIT,
+	LEXER_STATE_START,
 	LEXER_STATE_INT,
 	LEXER_STATE_WORD,
 	LEXER_STATE_MINUS,
@@ -32,6 +32,7 @@ enum TOKEN_TYPE {
 	WORD_DROP,
 	WORD_SWAP,
 	WORD_CL,
+	WORD_ABS,
 	OP_PLUS,
 	OP_MINUS,
 	OP_MUL,
@@ -67,8 +68,9 @@ char is_digit(char c);
 char is_lower(char c);
 char is_alpha(char c);
 char to_upper(char c);
-char str_cmp(char *s1, const char *s2);
+char str_cmp(const char *s1, const char *s2);
 char is_space(char c);
 int atoi(const char* str);
 void* memcpy(void* destptr, const void* srcptr, size_t num);
+int abs(int x);
 #endif

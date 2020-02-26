@@ -9,7 +9,7 @@ int token_err = 0;
 /* Lexer methods */
 Lexer* new_lexer() {
 	Lexer* l = (Lexer*) malloc(sizeof(Lexer));	
-	l->state = LEXER_STATE_INIT;
+	l->state = LEXER_STATE_START;
 	return l;
 }
 
@@ -55,6 +55,8 @@ Token* next_token(Lexer* l, char* buff, int* buff_shift) {
 		t->type = WORD_SWAP;
 	} else if (str_cmp(t->value, "CL")) {
 		t->type = WORD_CL;
+	} else if (str_cmp(t->value, "ABS")) {
+		t->type = WORD_ABS;
 	} else if (str_cmp(t->value, "+")) {
 		t->type = OP_PLUS;
 	} else if (str_cmp(t->value, "-")) {
@@ -103,6 +105,9 @@ void print_token(Token* t) {
 	case WORD_CL:
 		puts("WORD_CL ");
 		break;
+	case WORD_ABS:
+		puts("WORD_ABS ");
+		break;
 	case OP_PLUS:
 		puts("OP_PLUS ");
 		break;
@@ -145,6 +150,7 @@ void print_token_value(Token* t) {
 	case WORD_DROP:
 	case WORD_SWAP:
 	case WORD_CL:
+	case WORD_ABS:
 	case OP_PLUS:
 	case OP_MINUS:
 	case OP_MUL:
@@ -174,6 +180,7 @@ Token* copy_token(Token* t) {
 	case WORD_DROP:
 	case WORD_SWAP:
 	case WORD_CL:
+	case WORD_ABS:
 	case OP_PLUS:
 	case OP_MINUS:
 	case OP_MUL:
@@ -202,6 +209,7 @@ void delete_token(Token* t) {
 	case WORD_DROP:
 	case WORD_SWAP:
 	case WORD_CL:
+	case WORD_ABS:
 	case OP_PLUS:
 	case OP_MINUS:
 	case OP_MUL:
@@ -236,7 +244,7 @@ char to_upper(char c) {
 	return c - 32;
 }
 
-char str_cmp(char *s1, const char *s2) {
+char str_cmp(const char *s1, const char *s2) {
 	char c1, c2;
 	int i = 0;
 	do {
@@ -245,7 +253,7 @@ char str_cmp(char *s1, const char *s2) {
 		if (c1 != c2) return 0;
 		i++;
 	} while (c2 != '\0');
-	return 1;
+	return c1 == '\0';
 }
 
 
@@ -272,4 +280,9 @@ void* memcpy(void* destptr, const void* srcptr, size_t num) {
 		((char*)destptr)[i] = ((char*)srcptr)[i];
 	}
 	return destptr;
+}
+
+int abs(int x) {
+	if (x < 0) return -x;
+	return x;
 }

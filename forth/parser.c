@@ -49,6 +49,15 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 		case WORD_CL:
 			clear_screen();
 			return;
+		case WORD_ABS:
+			if (stack_empty(st)) {
+				puts("error: stack underflow\n");
+				return;
+			}
+			t1 = stack_pop(st);
+			t1->int_value = abs(t1->int_value);
+			stack_push(st, t1);
+			break;
 		case OP_PLUS:
 			if (stack_empty(st)) {
 				puts("error: stack underflow\n");
