@@ -7,7 +7,6 @@
 /* Lexer methods */
 Lexer* new_lexer() {
 	Lexer* l = (Lexer*) malloc(sizeof(Lexer));	
-	l->state = LEXER_STATE_EXECUTE;
 	l->read = LEXER_READ_START;
 	return l;
 }
@@ -19,107 +18,97 @@ Token* next_token(Lexer* l, char* buff, int* buff_shift) {
 	Token* t = (Token*) malloc(sizeof(Token));
 	for (i = 0; b_shift+i < LINE_BUFFER_SIZE; i++, (*buff_shift)++) {
 		char c = buff[b_shift+i] = to_upper(buff[b_shift+i]);
-		switch(l->state) {
-		case LEXER_STATE_COMPILE:
-			puts("COMPILE STATE\n");
-			goto L_NULL;
-		case LEXER_STATE_EXECUTE:
-			switch(l->read) {
-			case LEXER_READ_START:
-				if (is_whitespace(c) || c == '\0') {
-					goto L_NULL;
-				} else if (c == '/') {
-					l->read = LEXER_READ_DIV;
-					t->type = TOKEN_DIV;
-				} else if (c == '*') {
-					l->read = LEXER_READ_MUL;
-					t->type = TOKEN_MUL;
-				} else if (c == '+') {
-					l->read = LEXER_READ_PLUS;
-					t->type = TOKEN_PLUS;
-				} else if (c == '-') {
-					l->read = LEXER_READ_MINUS;
-					t->type = TOKEN_MINUS;
-				} else if (c == '%') {
-					l->read = LEXER_READ_MOD;
-					t->type = TOKEN_MOD;
-				} else if (c == '.') {
-					l->read = LEXER_READ_DOT;
-					t->type = TOKEN_DOT;
-				} else if (c == ':') {
-					l->read = LEXER_READ_COLON;
-					t->type = TOKEN_COLON;
-				} else if (c == ';') {
-					l->read = LEXER_READ_SEMICOLON;
-					t->type = TOKEN_SEMICOLON;
-				} else if (c == '>') {
-					l->read = LEXER_READ_MORE;
-					t->type = TOKEN_MORE;
-				} else if (c == '<') {
-					l->read = LEXER_READ_LESS;
-					t->type = TOKEN_LESS;
-				} else if (c == '=') {
-					l->read = LEXER_READ_EQ;
-					t->type = TOKEN_EQ;
-				} else if (is_digit(c)) {
-					l->read = LEXER_READ_INT;	
-					t->type = TOKEN_INT;
-				} else if (is_alpha(c)) {
-					l->read = LEXER_READ_WORD;
-					t->type = TOKEN_WORD;
-				} else {
-					puts("INVALID CHAR\n");
-					goto L_NULL;
-				}			
-				break;
-			case LEXER_READ_COLON:
-			case LEXER_READ_SEMICOLON:
-			case LEXER_READ_EQ:
-			case LEXER_READ_LESS:
-			case LEXER_READ_MORE:
-			case LEXER_READ_DIV:
-			case LEXER_READ_MUL:
-			case LEXER_READ_MOD:
-			case LEXER_READ_DOT:
-				if (is_whitespace(c) || c == '\0') {
-					goto L_OP;
-				} else {
-					goto L_NULL;
-				}
-			case LEXER_READ_INT:
-				if (is_whitespace(c) || c == '\0') {
-					goto L_INT;
-				} else if (is_digit(c)) {
-					break;
-				} else {
-					goto L_NULL;
-				}
-			case LEXER_READ_WORD:
-				if (is_whitespace(c) || c == '\0') {
-					goto L_WORD;
-				} else if (is_alphanum(c)) {
-					break;
-				} else {
-					goto L_NULL;
-				}
-			case LEXER_READ_PLUS:
-			case LEXER_READ_MINUS:
-				if (is_whitespace(c) || c == '\0') {
-					goto L_OP;
-				} else if (is_digit(c)) {
-					t->type = TOKEN_INT;
-					l->read = LEXER_READ_INT;
-					break;
-				} else {
-					goto L_NULL;
-				}
-			default: 
-				puts("INVALID LEXER_READ\n");
+		switch(l->read) {
+		case LEXER_READ_START:
+			if (is_whitespace(c) || c == '\0') {
+				goto L_NULL;
+			} else if (c == '/') {
+				l->read = LEXER_READ_DIV;
+				t->type = TOKEN_DIV;
+			} else if (c == '*') {
+				l->read = LEXER_READ_MUL;
+				t->type = TOKEN_MUL;
+			} else if (c == '+') {
+				l->read = LEXER_READ_PLUS;
+				t->type = TOKEN_PLUS;
+			} else if (c == '-') {
+				l->read = LEXER_READ_MINUS;
+				t->type = TOKEN_MINUS;
+			} else if (c == '%') {
+				l->read = LEXER_READ_MOD;
+				t->type = TOKEN_MOD;
+			} else if (c == '.') {
+				l->read = LEXER_READ_DOT;
+				t->type = TOKEN_DOT;
+			} else if (c == ':') {
+				l->read = LEXER_READ_COLON;
+				t->type = TOKEN_COLON;
+			} else if (c == ';') {
+				l->read = LEXER_READ_SEMICOLON;
+				t->type = TOKEN_SEMICOLON;
+			} else if (c == '>') {
+				l->read = LEXER_READ_MORE;
+				t->type = TOKEN_MORE;
+			} else if (c == '<') {
+				l->read = LEXER_READ_LESS;
+				t->type = TOKEN_LESS;
+			} else if (c == '=') {
+				l->read = LEXER_READ_EQ;
+				t->type = TOKEN_EQ;
+			} else if (is_digit(c)) {
+				l->read = LEXER_READ_INT;	
+				t->type = TOKEN_INT;
+			} else if (is_alpha(c)) {
+				l->read = LEXER_READ_WORD;
+				t->type = TOKEN_WORD;
+			} else {
+				puts("INVALID CHAR\n");
+				goto L_NULL;
+			}			
+			break;
+		case LEXER_READ_COLON:
+		case LEXER_READ_SEMICOLON:
+		case LEXER_READ_EQ:
+		case LEXER_READ_LESS:
+		case LEXER_READ_MORE:
+		case LEXER_READ_DIV:
+		case LEXER_READ_MUL:
+		case LEXER_READ_MOD:
+		case LEXER_READ_DOT:
+			if (is_whitespace(c) || c == '\0') {
+				goto L_OP;
+			} else {
 				goto L_NULL;
 			}
-			break;
-		default:
-			puts("INVALID LEXER_STATE\n");
+		case LEXER_READ_INT:
+			if (is_whitespace(c) || c == '\0') {
+				goto L_INT;
+			} else if (is_digit(c)) {
+				break;
+			} else {
+				goto L_NULL;
+			}
+		case LEXER_READ_WORD:
+			if (is_whitespace(c) || c == '\0') {
+				goto L_WORD;
+			} else if (is_alphanum(c)) {
+				break;
+			} else {
+				goto L_NULL;
+			}
+		case LEXER_READ_PLUS:
+		case LEXER_READ_MINUS:
+			if (is_whitespace(c) || c == '\0') {
+				goto L_OP;
+			} else if (is_digit(c)) {
+				t->type = TOKEN_INT;
+				l->read = LEXER_READ_INT;
+				break;
+			} else {
+				goto L_NULL;
+			}
+		default: 
+			puts("INVALID LEXER_READ\n");
 			goto L_NULL;
 		}
 	}	

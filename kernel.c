@@ -22,7 +22,7 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
     rtc_seed();
     
     Lexer* lex = new_lexer();
-    Parser prs;
+    Parser* prs = new_parser();
     Stack st;
     
     init_stack(&st, DATA_STACK_SIZE);
@@ -39,16 +39,16 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
 			skip_spaces(buff, &i);
 			if (buff[i] == '\0') break;
 			t = next_token(lex, buff, &i);
-			//puts("\ntoken: ");
-			//print_token(t);
+			// puts("\ntoken: ");
+			// print_token(t);
 			if (t == NULL) {
-				puts("syntax error\n");
+				puts("lex error\n");
 				skip(buff, &i);
 				continue;
 			}
 			tokens[j++] = t;
 		}
-		//printf("\nj = %d\n", j);
-		parse(&prs, &st, tokens, j);
+		// printf("\nj = %d\n", j);
+		parse(prs, &st, tokens, j);
 	}
 }

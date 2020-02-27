@@ -29,14 +29,8 @@ enum LEXER_READ {
 	LEXER_READ_MORE,
 };
  
-enum LEXER_STATE {
-	LEXER_STATE_COMPILE,
-	LEXER_STATE_EXECUTE,
-};
- 
 /* Lexer */
 typedef struct lexer{
-	enum LEXER_STATE state;
 	enum LEXER_READ read;
 } Lexer;
 
