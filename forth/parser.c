@@ -16,28 +16,20 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 			stack_push(st, t);
 			break;
 		case TOKEN_DUP:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_top(st);
 			t2 = copy_token(t1);
 			stack_push(st, t2);
 			break;
 		case TOKEN_DROP:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
 			delete_token(t1);
 			break;
 		case TOKEN_SWAP:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t2 = stack_pop(st);
 			stack_push(st, t1);
 			stack_push(st, t2);
@@ -46,82 +38,58 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 			clear_screen();
 			return;
 		case TOKEN_ABS:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
 			t1->int_value = abs(t1->int_value);
 			stack_push(st, t1);
 			break;
 		case TOKEN_PLUS:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t2 = stack_pop(st);
 			t2->int_value += t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
 		case TOKEN_MINUS:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t2 = stack_pop(st);
 			t2->int_value -= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
 		case TOKEN_MUL:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t2 = stack_pop(st);
 			t2->int_value *= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
 		case TOKEN_DIV:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t2 = stack_pop(st);
 			t2->int_value /= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
 		case TOKEN_MOD:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t2 = stack_pop(st);
 			t2->int_value %= t1->int_value;
 			delete_token(t1);
 			stack_push(st, t2);
 			break;
 		case TOKEN_DOT:
-			if (stack_empty(st)) {
-				goto L_STACK_UNDERFLOW;
-			}
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
 			t1 = stack_pop(st);
 			print_token_value(t1);
 			delete_token(t1);
@@ -131,8 +99,32 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 		case TOKEN_ELSE:
 		case TOKEN_THEN:
 		case TOKEN_EQ:
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
+			t1 = stack_pop(st);
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
+			t2 = stack_pop(st);
+			t2->int_value = (t2->int_value == t1->int_value) ? 1 : 0;
+			stack_push(st, t2);
+			delete_token(t1);
+			break;
 		case TOKEN_MORE:
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
+			t1 = stack_pop(st);
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
+			t2 = stack_pop(st);
+			t2->int_value = (t2->int_value > t1->int_value) ? 1 : 0;
+			stack_push(st, t2);
+			delete_token(t1);
+			break;
 		case TOKEN_LESS:
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
+			t1 = stack_pop(st);
+			if (stack_empty(st)) goto L_STACK_UNDERFLOW;
+			t2 = stack_pop(st);
+			t2->int_value = (t2->int_value < t1->int_value) ? 1 : 0;
+			stack_push(st, t2);
+			delete_token(t1);
+			break;
 		case TOKEN_COLON:
 		case TOKEN_SEMICOLON:
 			break;
