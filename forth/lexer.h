@@ -88,6 +88,6 @@ char to_upper(char c);
 char str_cmp(const char *s1, const char *s2);
 char is_whitespace(char c);
 int atoi(const char* str);
-void* memcpy(void* destptr, const void* srcptr, size_t num);
+void* memcpy(void* destptr, const void* srcptr, int num);
 int abs(int x);
 #endif

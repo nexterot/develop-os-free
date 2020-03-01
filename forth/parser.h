@@ -5,6 +5,7 @@
 #define _PARSER_H
 
 #include "lexer.h"
+#include "dict.h"
 #include "stack.h"
 #include "printf.h"
 
@@ -29,7 +30,7 @@ typedef struct par{
 
 /* Parser methods */
 Parser* new_parser();
-void parse(Parser* p, Stack* st, Token** tokens, int tokens_num);
+void parse(Parser* p, Stack* st, Dict* dic, Token** tokens, int tokens_num);
 Token* next(Parser* p);
 char has_next(Parser* p);
 

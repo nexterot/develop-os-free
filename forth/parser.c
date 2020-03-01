@@ -12,14 +12,16 @@ Parser* new_parser() {
 	return p;
 }
 
-void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
+void parse(Parser* p, Stack* st, Dict* dic, Token** tokens, int tokens_num) {
+	p->state = PARSER_STATE_EXECUTE;
 	p->tokens = tokens;
 	p->tokens_num = tokens_num;
 	p->tokens_pos = 0;
+	DictElem *d, *new_d;
 	while (has_next(p)) {
-		Token* t = next(p), *t1, *t2;
+		Token *t = next(p), *t1, *t2;
 		switch(p->state) {
-			
+		// COMPILE STATE
 		case PARSER_STATE_COMPILE:
 			switch(p->rule) {
 			case PARSER_RULE_START:
@@ -28,11 +30,17 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 					clear_screen();
 					break;
 				case TOKEN_WORD:
+					d = find_word(dic, t->value);
+					if (d != NULL) {
+						puts("error: word already exists\n");
+						goto L_DELETE_WORD;
+					}
+					new_d = new_dict_elem(t->value, t->value_len);
 					p->rule = PARSER_RULE_BODY;
 					break;
 				default:
 					puts("syntax error: expecting word name\n");
-					return;
+					goto L_DELETE_WORD;
 				}
 				break;
 			case PARSER_RULE_BODY:
@@ -56,18 +64,20 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 				case TOKEN_EQ:
 				case TOKEN_MORE:
 				case TOKEN_LESS:
+					dict_elem_add_token(new_d, t);
 					break;
 				case TOKEN_COLON:
 					puts("syntax error: ambiguous colon\n");
-					return;
+					goto L_DELETE_WORD;
 				case TOKEN_SEMICOLON:
 					p->state = PARSER_STATE_EXECUTE;
+					add_word(dic, new_d);
 					break;
 				default:
 					puts("error: unrecognized token\n");
 					print_token(t);
 					putchar('\n');
-					return;
+					goto L_DELETE_WORD;
 				}
 				break;
 			default:
@@ -75,7 +85,7 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 				return;
 			}
 			break;
-			
+		// EXECUTE STATE
 		case PARSER_STATE_EXECUTE:
 			switch(t->type) {
 			case TOKEN_INT:
@@ -161,6 +171,12 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 				delete_token(t1);
 				break;
 			case TOKEN_WORD:
+				d = find_word(dic, t->value);
+				if (d == NULL) {
+					puts("error: unknown word\n");
+					return;
+				}
+				execute_word(st, dic, d);
 				break;
 			case TOKEN_IF:
 			case TOKEN_ELSE:
@@ -221,6 +237,11 @@ void parse(Parser* p, Stack* st, Token** tokens, int tokens_num) {
 	
 L_STACK_UNDERFLOW:
 	puts("error: stack underflow\n");
+	return;
+	
+L_DELETE_WORD:
+	delete_dict_elem(new_d);
+	p->state = PARSER_STATE_EXECUTE;
 	return;
 }
 

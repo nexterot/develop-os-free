@@ -169,7 +169,7 @@ void skip(char *buff, int* buff_shift) {
 void print_token(Token* t) {
 	switch(t->type) {
 	case TOKEN_INT:
-		puts("TOKEN_INT ");
+		printf("TOKEN_INT %d ", t->int_value);
 		break;
 	case TOKEN_DUP:
 		puts("TOKEN_DUP ");
@@ -205,12 +205,11 @@ void print_token(Token* t) {
 		puts("TOKEN_DOT ");
 		break;
 	case TOKEN_WORD:
-		puts("TOKEN_WORD ");
+		printf("TOKEN_WORD %s", t->value);
 		break;
 	default:
 		puts("unrecognized token ");
 	}
-	puts(t->value);
 }
 
 void print_token_value(Token* t) {
@@ -218,8 +217,10 @@ void print_token_value(Token* t) {
 	case TOKEN_INT:
 		printf("%d ", t->int_value);
 		break;
-	default:
+	case TOKEN_WORD:
 		puts(t->value);
+	default:
+		break;
 	}
 }
 
@@ -228,7 +229,6 @@ Token* new_token() {
 }
 
 Token* copy_token(Token* t) {
-	if (t == NULL) return NULL;
 	Token* t2 = new_token();
 	t2->type = t->type;
 	switch(t->type) {
@@ -252,9 +252,11 @@ Token* copy_token(Token* t) {
 	case TOKEN_EQ:
 	case TOKEN_COLON:
 	case TOKEN_SEMICOLON:
+		break;
 	case TOKEN_WORD:
 		t2->value = (char*)malloc((t->value_len+1) * sizeof(char));
 		memcpy(t2->value, t->value, t->value_len);
+		t2->value[t->value_len] = '\0';
 		t2->value_len = t->value_len;
 		break;
 	default:
@@ -285,6 +287,7 @@ void delete_token(Token* t) {
 	case TOKEN_EQ:
 	case TOKEN_COLON:
 	case TOKEN_SEMICOLON:
+		break;
 	case TOKEN_WORD:
 		free(t->value);
 		break;
@@ -349,9 +352,10 @@ int atoi(const char* str) {
 	return c * k;
 }
 
-void* memcpy(void* destptr, const void* srcptr, size_t num) {
-	for (size_t i = 0; i < num; i++) {
-		((char*)destptr)[i] = ((char*)srcptr)[i];
+void* memcpy(void* destptr, const void* srcptr, int num) {
+	char *d = destptr, *s = srcptr;
+	for (int i = 0; i < num; i++) {
+		d[i] = s[i];
 	}
 	return destptr;
 }

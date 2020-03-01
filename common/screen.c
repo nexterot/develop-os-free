@@ -105,8 +105,13 @@ int getchar() {
 char* gets(char* s) {
     char c;
     int i = 0;
+    int copy_x = cursor_x;
     while ((c = getchar()) != '\n') {
-		if (c == '\b') {
+		if (c == '\b' && cursor_x > copy_x + 1) {
+			cursor_x--;
+            PUT(' ');
+            i--;
+            update_cursor();
 			continue;
 		}
         putchar(c);

@@ -23,9 +23,12 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
     
     Lexer* lex = new_lexer();
     Parser* prs = new_parser();
-    Stack st;
     
+    Stack st;
     init_stack(&st, DATA_STACK_SIZE);
+    
+    Dict dic;
+    dic.start = NULL;
     
     char buff[LINE_BUFFER_SIZE];
     Token** tokens = (Token**) malloc(TOKENS_BUFFER_SIZE * sizeof(Token*));
@@ -49,6 +52,6 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
 			tokens[j++] = t;
 		}
 		// printf("\nj = %d\n", j);
-		parse(prs, &st, tokens, j);
+		parse(prs, &st, &dic, tokens, j);
 	}
 }
