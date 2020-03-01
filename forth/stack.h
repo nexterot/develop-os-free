@@ -24,6 +24,5 @@ void stack_push(Stack *s, Token *t);
 Token* stack_pop(Stack *s);
 Token* stack_top(Stack *s);
 void execute_word(Stack* st, Dict* dic, DictElem* d);
-char execute_token(Stack* st, Dict* dic, Token* t);
 
 #endif

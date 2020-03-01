@@ -47,17 +47,17 @@ void delete_dict_elem(DictElem* d) {
 void add_word(Dict* dic, DictElem* d) {
 	if (dic->start == NULL) {
 		dic->start = d;
-		//puts("add_word: first\n");
+		/*
+		puts("add_word: first\n");
 		for (int i = 0; i < d->tokens_len; i++) {
 			Token* t = d->tokens[i];
-			/*
 			puts("add word token: ");
 			print_token(t);
 			puts(" ");
 			print_token_value(t);
 			puts("\n");
-			*/
 		}
+		*/
 		return;
 	}
 	DictElem* next_d = dic->start;

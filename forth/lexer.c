@@ -353,7 +353,8 @@ int atoi(const char* str) {
 }
 
 void* memcpy(void* destptr, const void* srcptr, int num) {
-	char *d = destptr, *s = srcptr;
+	char *d = destptr;
+	const char *s = srcptr;
 	for (int i = 0; i < num; i++) {
 		d[i] = s[i];
 	}

@@ -101,17 +101,19 @@ int getchar() {
         }           
     }
 }
-
+// : f dup 0 = if drop 1 else dup 1 - f * then ;
 char* gets(char* s) {
     char c;
     int i = 0;
     int copy_x = cursor_x;
     while ((c = getchar()) != '\n') {
-		if (c == '\b' && cursor_x > copy_x + 1) {
-			cursor_x--;
-            PUT(' ');
-            i--;
-            update_cursor();
+		if (c == '\b') {
+			if (cursor_x > copy_x) {
+				cursor_x--;
+				PUT(' ');
+				i--;
+				update_cursor();
+			}
 			continue;
 		}
         putchar(c);
