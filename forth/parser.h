@@ -21,17 +21,12 @@ enum PARSER_RULE {
 };
 
 typedef struct par{
-	Token** tokens;
-	int    tokens_num;
-	int    tokens_pos;
 	enum PARSER_STATE state;
 	enum PARSER_RULE rule;
 } Parser;
 
 /* Parser methods */
 Parser* new_parser();
-void parse(Parser* p, Stack* st, Dict* dic, Token** tokens, int tokens_num);
-Token* next(Parser* p);
-char has_next(Parser* p);
+void parse(Parser* p, Stack* st, Dict* dic, Token* t);
 
 #endif

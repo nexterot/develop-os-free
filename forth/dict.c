@@ -5,18 +5,104 @@
 #include "dict.h"
 
 /* Dict methods */
-#define DICT_SIZE 32
+
+void init_dict(Dict* dic) {
+	dic->top = NULL;
+	DictElem *d;
+	// DUP
+	d = new_dict_elem("DUP", 3);
+	d->func_ptr = _dup;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// DROP
+	d = new_dict_elem("DROP", 4);
+	d->func_ptr = _drop;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// SWAP
+	d = new_dict_elem("SWAP", 4);
+	d->func_ptr = _swap;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// ABS
+	d = new_dict_elem("ABS", 3);
+	d->func_ptr = _abs;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// FORGET
+	d = new_dict_elem("FORGET", 6);
+	d->func_ptr = _forget;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// CL
+	d = new_dict_elem("CL", 2);
+	d->func_ptr = _cl;	
+	d->is_immediate = 1;
+	add_word(dic, d);	
+	// .
+	d = new_dict_elem(".", 1);
+	d->func_ptr = _dot;	
+	d->is_immediate = 1;
+	add_word(dic, d);
+	// .S
+	d = new_dict_elem(".S", 2);
+	d->func_ptr = _dot_s;	
+	d->is_immediate = 1;
+	add_word(dic, d);
+	// +
+	d = new_dict_elem("+", 1);
+	d->func_ptr = _sum;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// -
+	d = new_dict_elem("-", 1);
+	d->func_ptr = _sub;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// *
+	d = new_dict_elem("*", 1);
+	d->func_ptr = _mul;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// /
+	d = new_dict_elem("/", 1);
+	d->func_ptr = _div;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// %
+	d = new_dict_elem("%", 1);
+	d->func_ptr = _mod;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// =
+	d = new_dict_elem("=", 1);
+	d->func_ptr = _eq;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// <
+	d = new_dict_elem("<", 1);
+	d->func_ptr = _less;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// >
+	d = new_dict_elem(">", 1);
+	d->func_ptr = _more;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+}
 
 DictElem* find_word(Dict* dic, const char* name) {
-	//puts("find_word called\n");
-	DictElem* next_d = dic->start;
-	while (next_d != NULL) {
-		//printf("find_word: %s\n", next_d->name);
-		if (str_cmp(next_d->name, name)) {
-			return next_d;
+	//printf("searching for word %s\n", name);
+	DictElem* prev_d = dic->top;
+	while (prev_d != NULL) {
+		//printf("word %s\n", prev_d->name);
+		if (str_cmp(prev_d->name, name)) {
+			//printf("found!\n");
+			return prev_d;
 		}
-		next_d = next_d->next;
+		prev_d = prev_d->prev;
 	}
+	//printf("not found!\n");
 	return NULL;
 }
 
@@ -28,6 +114,7 @@ DictElem* new_dict_elem(const char* name, int name_len) {
 	d->name = (char*) malloc((name_len+1) * sizeof(char));
 	memcpy(d->name, name, name_len);
 	d->name[name_len] = '\0';
+	d->func_ptr = NULL;
 	return d;
 }
 
@@ -45,25 +132,45 @@ void delete_dict_elem(DictElem* d) {
 }
 
 void add_word(Dict* dic, DictElem* d) {
-	if (dic->start == NULL) {
-		dic->start = d;
-		/*
-		puts("add_word: first\n");
-		for (int i = 0; i < d->tokens_len; i++) {
-			Token* t = d->tokens[i];
-			puts("add word token: ");
-			print_token(t);
-			puts(" ");
-			print_token_value(t);
-			puts("\n");
-		}
-		*/
+	d->prev = dic->top;
+	dic->top = d;
+}
+
+
+void forget_word(Dict* dic, const char* name) {
+	DictElem* d = dic->top;
+	if (str_cmp(d->name, name)) {
+		dic->top = d->prev;
+		delete_dict_elem(d);
 		return;
 	}
-	DictElem* next_d = dic->start;
-	while (next_d->next != NULL) {
-		next_d = next_d->next;
+	while (d->prev != NULL) {
+		if (str_cmp(d->prev->name, name)) {
+			d->prev = d->prev->prev;
+			delete_dict_elem(d->prev);
+			return;
+		}
+		d = d->prev;
 	}
-	next_d->next = d;
-	//puts("add_word: not first\n");
+}
+
+
+void execute_word(Stack* st, Dict* dic, DictElem* d) {
+	if (d->func_ptr != NULL) {
+		(*d->func_ptr)(st);
+		return;
+	}
+	for (int i = 0; i < d->tokens_len; i++) {
+		Token* t = copy_token(d->tokens[i]);
+		DictElem *d;
+		d = find_word(dic, t->value);
+		if (d != NULL) {
+			execute_word(st, dic, d);
+		} else if (is_int(t->value)) {
+			stack_push(st, t);
+		} else {
+			puts("invalid token\n");
+			return;
+		}
+	}
 }

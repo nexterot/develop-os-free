@@ -34,36 +34,10 @@ typedef struct lexer{
 	enum LEXER_READ read;
 } Lexer;
 
-enum TOKEN_TYPE {
-	TOKEN_INT,
-	TOKEN_WORD,
-	TOKEN_DUP,
-	TOKEN_DROP,
-	TOKEN_SWAP,
-	TOKEN_CL,
-	TOKEN_ABS,
-	TOKEN_IF,
-	TOKEN_ELSE,
-	TOKEN_THEN,
-	TOKEN_PLUS,
-	TOKEN_MINUS,
-	TOKEN_MUL,
-	TOKEN_DIV,
-	TOKEN_MOD,
-	TOKEN_DOT,
-	TOKEN_EQ,
-	TOKEN_MORE,
-	TOKEN_LESS,
-	TOKEN_COLON,
-	TOKEN_SEMICOLON,
-};
-
  /* Token */
 typedef struct token{
-	 int int_value;
 	 char* value;
-	 unsigned int value_len;
-	 enum TOKEN_TYPE type;
+	 int value_len;
 } Token;
 
 /* Lexer methods */
@@ -73,7 +47,6 @@ void skip_spaces(char *buff, int* buff_shift);
 void skip(char *buff, int* buff_shift);
 
 /* Token methods */
-void print_token(Token* t);
 void print_token_value(Token* t);
 void delete_token(Token* t);
 Token* new_token();
@@ -88,6 +61,8 @@ char to_upper(char c);
 char str_cmp(const char *s1, const char *s2);
 char is_whitespace(char c);
 int atoi(const char* str);
+int itoa(int value, char *sp, int radix);
+char is_int(const char* str);
 void* memcpy(void* destptr, const void* srcptr, int num);
 int abs(int x);
 #endif
