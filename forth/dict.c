@@ -129,6 +129,11 @@ void init_dict(Dict* dic) {
 	d->func_ptr = _then;	
 	d->is_immediate = 1;
 	add_word(dic, d);
+	// BEGIN 
+	d = new_dict_elem("BEGIN", 5);
+	d->func_ptr = _then;	
+	d->is_immediate = 1;
+	add_word(dic, d);
 }
 
 DictElem* find_word(Dict* dic, const char* name) {
@@ -232,6 +237,18 @@ void execute_word(Stack* st, RetStack* ret_st, Dict* dic, DictElem* d) {
 			}
 		} else if (str_cmp(t->value, "ELSE")) {
 			i = find_token(d, t->jump) - 1;
+		} else if (str_cmp(t->value, "UNTIL")) {
+			Token *t1;
+			if (stack_empty(st)) {
+				puts("error: stack underflow\n");
+				return;
+			}
+			t1 = stack_pop(st);
+			int v = atoi(t1->value);
+			delete_token(t1);
+			if (!v) {
+				i = find_token(d, t->jump) - 1;
+			}
 		} else if (is_int(t->value)) {
 			stack_push(st, copy_token(d->tokens[i]));
 		} else {
