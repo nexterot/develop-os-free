@@ -27,6 +27,6 @@ typedef struct par{
 
 /* Parser methods */
 Parser* new_parser();
-void parse(Parser* p, Stack* st, Dict* dic, Token* t);
+void parse(Parser* p, Stack* st, RetStack* ret_st, Dict* dic, Token* t);
 
 #endif

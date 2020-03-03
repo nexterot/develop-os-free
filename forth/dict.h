@@ -15,7 +15,7 @@ typedef struct dict_elem {
 	struct dict_elem* prev;
 	Token** tokens;
 	int tokens_len;
-	void (*func_ptr)(Stack*);
+	void (*func_ptr)(Stack*, RetStack*);
 	char is_immediate;
 } DictElem;
 
@@ -31,6 +31,6 @@ void dict_elem_add_token(DictElem* d, Token* t);
 void delete_dict_elem(DictElem* d);
 void add_word(Dict* dic, DictElem* d);
 void forget_word(Dict* dic, const char* name);
-void execute_word(Stack* st, Dict* dic, DictElem* d);
+void execute_word(Stack* st, RetStack* ret_st, Dict* dic, DictElem* d);
 
 #endif

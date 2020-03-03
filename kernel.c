@@ -24,9 +24,10 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
     Parser* prs = new_parser();
     Stack st;
     init_stack(&st, DATA_STACK_SIZE);
+    RetStack ret_st;
+    init_ret_stack(&ret_st, DATA_STACK_SIZE);
     Dict dic;
     init_dict(&dic);
-    
     char buff[LINE_BUFFER_SIZE];
 	for (;;) {
 		int i = 0;
@@ -43,7 +44,7 @@ void main(multiboot_info_t* mbd, unsigned int magic) {
 				skip(buff, &i);
 				continue;
 			}
-			parse(prs, &st, &dic, t);
+			parse(prs, &st, &ret_st, &dic, t);
 		}
 		putchar('\n');
 	}

@@ -12,7 +12,7 @@ Parser* new_parser() {
 	return p;
 }
 
-void parse(Parser* p, Stack* st, Dict* dic, Token* t) {
+void parse(Parser* p, Stack* st, RetStack* ret_st, Dict* dic, Token* t) {
 	DictElem *d, *new_d;
 	switch(p->state) {
 	// COMPILE STATE
@@ -42,7 +42,7 @@ void parse(Parser* p, Stack* st, Dict* dic, Token* t) {
 	case PARSER_STATE_EXECUTE:
 		d = find_word(dic, t->value);
 		if (d != NULL) {
-			execute_word(st, dic, d);
+			execute_word(st, ret_st, dic, d);
 		} else if (is_int(t->value)) {
 			stack_push(st, t);
 		} else if (str_cmp(t->value, ":")) {

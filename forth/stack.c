@@ -29,7 +29,35 @@ Token* stack_top(Stack *s) {
 	return s->data[s->top-1];
 }
 
-void _dup(Stack *st) {
+/* RetStack methods */
+
+void init_ret_stack(RetStack* s, int n) {
+	s->data = (int*) malloc(n * sizeof(int));
+	s->cap = n;
+	s->top = 0;
+}
+
+
+char rstack_empty(RetStack *s) {
+	return s->top == 0;
+}
+
+void rstack_push(RetStack *s, int x) {
+	s->data[s->top] = x;
+	s->top++;
+}
+
+int rstack_pop(RetStack *s) {
+	s->top--;
+	return s->data[s->top];
+}
+
+int rstack_top(RetStack *s) {
+	return s->data[s->top-1];
+}
+/* Forth methods */
+
+void _dup(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -40,11 +68,11 @@ void _dup(Stack *st) {
 	stack_push(st, t2);	
 }
 
-void _cl(Stack *st) {
+void _cl(Stack *st, RetStack* ret_st) {
 	clear_screen();
 }
 
-void _dot(Stack *st) {
+void _dot(Stack *st, RetStack* ret_st) {
 	Token *t1;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -56,13 +84,13 @@ void _dot(Stack *st) {
 	delete_token(t1);
 }
 
-void _dot_s(Stack *s) {
+void _dot_s(Stack *s, RetStack* ret_st) {
 	for (int i = 0; i < s->top; i++) {
 		printf("%s ", s->data[i]->value);
 	}
 }
 
-void _drop(Stack *st) {
+void _drop(Stack *st, RetStack* ret_st) {
 	Token *t1;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -72,7 +100,7 @@ void _drop(Stack *st) {
 	delete_token(t1);
 }
 
-void _swap(Stack *st) {
+void _swap(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -89,11 +117,11 @@ void _swap(Stack *st) {
 	stack_push(st, t2);
 }
 
-void _forget(Stack *st) {
+void _forget(Stack *st, RetStack* ret_st) {
 	
 }
 
-void _abs(Stack *st) {
+void _abs(Stack *st, RetStack* ret_st) {
 	Token *t1;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -117,7 +145,7 @@ void _abs(Stack *st) {
 	stack_push(st, t1);
 }
 
-void _sum(Stack *st) {
+void _sum(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -152,7 +180,7 @@ void _sum(Stack *st) {
 	stack_push(st, t2);
 }
 
-void _sub(Stack *st) {
+void _sub(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -187,7 +215,7 @@ void _sub(Stack *st) {
 	stack_push(st, t2);	
 }
 
-void _mul(Stack *st) {
+void _mul(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -222,7 +250,7 @@ void _mul(Stack *st) {
 	stack_push(st, t2);	
 }
 
-void _div(Stack *st) {
+void _div(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -257,7 +285,7 @@ void _div(Stack *st) {
 	stack_push(st, t2);	
 }
 
-void _mod(Stack *st) {
+void _mod(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -292,7 +320,7 @@ void _mod(Stack *st) {
 	stack_push(st, t2);	
 }
 
-void _eq(Stack *st) {
+void _eq(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -327,7 +355,7 @@ void _eq(Stack *st) {
 	stack_push(st, t2);		
 }
 
-void _more(Stack *st) {
+void _more(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -362,7 +390,7 @@ void _more(Stack *st) {
 	stack_push(st, t2);		
 }
 
-void _less(Stack *st) {
+void _less(Stack *st, RetStack* ret_st) {
 	Token *t1, *t2;
 	if (stack_empty(st)) {
 		puts("error: stack underflow\n");
@@ -395,4 +423,56 @@ void _less(Stack *st) {
 	t2->value = buff2;
 	t2->value_len = len + 1;
 	stack_push(st, t2);		
+}
+
+void _ret_to_st(Stack *st, RetStack* ret_st) {
+	Token *t1;
+	if (rstack_empty(ret_st)) {
+		puts("error: ret stack underflow\n");
+		return;
+	}
+	int v = rstack_pop(ret_st);
+	t1 = new_token();
+	char* buff = (char*) malloc(256 * sizeof(char));
+	int len = itoa(v, buff, 10); 
+	char* buff2 = (char*) malloc((len+1) * sizeof(char));
+	memcpy(buff2, buff, len+1);
+	free(buff);
+	t1->value = buff2;
+	t1->value_len = len + 1;
+	stack_push(st, t1);
+}
+
+void _st_to_ret(Stack *st, RetStack* ret_st) {
+	Token *t1;
+	if (stack_empty(st)) {
+		puts("error: stack underflow\n");
+		return;
+	}
+	t1 = stack_pop(st);
+	if (! is_int(t1->value)) {
+		puts("error: can't apply to non-int\n");
+		return;
+	}
+	int v = atoi(t1->value);
+	rstack_push(ret_st, v);
+	delete_token(t1);
+}
+
+void _ret_copy_st(Stack *st, RetStack* ret_st) {
+	Token *t1;
+	if (rstack_empty(ret_st)) {
+		puts("error: ret stack underflow\n");
+		return;
+	}
+	int v = rstack_top(ret_st);
+	t1 = new_token();
+	char* buff = (char*) malloc(256 * sizeof(char));
+	int len = itoa(v, buff, 10); 
+	char* buff2 = (char*) malloc((len+1) * sizeof(char));
+	memcpy(buff2, buff, len+1);
+	free(buff);
+	t1->value = buff2;
+	t1->value_len = len + 1;
+	stack_push(st, t1);
 }

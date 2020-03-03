@@ -89,6 +89,21 @@ void init_dict(Dict* dic) {
 	d->func_ptr = _more;	
 	d->is_immediate = 0;
 	add_word(dic, d);
+	// >R
+	d = new_dict_elem(">R", 2);
+	d->func_ptr = _st_to_ret;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// R>
+	d = new_dict_elem("R>", 2);
+	d->func_ptr = _ret_to_st;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// R@
+	d = new_dict_elem("R@", 2);
+	d->func_ptr = _ret_copy_st;	
+	d->is_immediate = 0;
+	add_word(dic, d);
 }
 
 DictElem* find_word(Dict* dic, const char* name) {
@@ -155,9 +170,9 @@ void forget_word(Dict* dic, const char* name) {
 }
 
 
-void execute_word(Stack* st, Dict* dic, DictElem* d) {
+void execute_word(Stack* st, RetStack* ret_st, Dict* dic, DictElem* d) {
 	if (d->func_ptr != NULL) {
-		(*d->func_ptr)(st);
+		(*d->func_ptr)(st, ret_st);
 		return;
 	}
 	for (int i = 0; i < d->tokens_len; i++) {
@@ -165,7 +180,7 @@ void execute_word(Stack* st, Dict* dic, DictElem* d) {
 		DictElem *d;
 		d = find_word(dic, t->value);
 		if (d != NULL) {
-			execute_word(st, dic, d);
+			execute_word(st, ret_st, dic, d);
 		} else if (is_int(t->value)) {
 			stack_push(st, t);
 		} else {
