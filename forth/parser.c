@@ -47,13 +47,24 @@ void parse(Parser* p, Stack* st, RetStack* ret_st, Dict* dic, Token* t) {
 				x->jump = t;
 				dict_elem_add_token(dic->top, t);
 			} else if (str_cmp(t->value, "BEGIN")) {
-				printf("word %s: add BEGIN\n", dic->top->name);
+				//printf("word %s: add BEGIN\n", dic->top->name);
 				rstack_push(ret_st, (int)t);
 				dict_elem_add_token(dic->top, t);
 			} else if (str_cmp(t->value, "UNTIL")) {
-				printf("word %s: add UNTIL\n", dic->top->name);
+				//printf("word %s: add UNTIL\n", dic->top->name);
 				Token* x = (Token*) rstack_pop(ret_st);
 				t->jump = x;
+				dict_elem_add_token(dic->top, t);
+			} else if (str_cmp(t->value, "WHILE")) {
+				//printf("word %s: add WHILE\n", dic->top->name);
+				rstack_push(ret_st, (int)t);
+				dict_elem_add_token(dic->top, t);
+			} else if (str_cmp(t->value, "REPEAT")) {
+				//printf("word %s: add REPEAT\n", dic->top->name);
+				Token* w = (Token*) rstack_pop(ret_st);
+				w->jump = t;
+				Token* b = (Token*) rstack_pop(ret_st);
+				t->jump = b;
 				dict_elem_add_token(dic->top, t);
 			} else {
 				//printf("word %s: add token %s\n", dic->top->name, t->value);
@@ -68,7 +79,7 @@ void parse(Parser* p, Stack* st, RetStack* ret_st, Dict* dic, Token* t) {
 	// EXECUTE STATE
 	case PARSER_STATE_EXECUTE:
 		d = find_word(dic, t->value);
-		 if (d != NULL) {
+		if (d != NULL) {
 			execute_word(st, ret_st, dic, d);
 		} else if (is_int(t->value)) {
 			stack_push(st, t);

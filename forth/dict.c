@@ -14,6 +14,21 @@ void init_dict(Dict* dic) {
 	d->func_ptr = _dup;	
 	d->is_immediate = 0;
 	add_word(dic, d);
+	// 2DUP
+	d = new_dict_elem("2DUP", 4);
+	d->func_ptr = _2dup;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// OVER
+	d = new_dict_elem("OVER", 4);
+	d->func_ptr = _over;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// ROT
+	d = new_dict_elem("ROT", 3);
+	d->func_ptr = _rot;	
+	d->is_immediate = 0;
+	add_word(dic, d);
 	// DROP
 	d = new_dict_elem("DROP", 4);
 	d->func_ptr = _drop;	
@@ -230,10 +245,7 @@ void execute_word(Stack* st, RetStack* ret_st, Dict* dic, DictElem* d) {
 			int v = atoi(t1->value);
 			delete_token(t1);
 			if (!v) {
-				i = find_token(d, t->jump) - 1;
-				if (str_cmp(t->jump->value, "ELSE")) {
-					i++;
-				}
+				i = find_token(d, t->jump);
 			}
 		} else if (str_cmp(t->value, "ELSE")) {
 			i = find_token(d, t->jump) - 1;
@@ -249,6 +261,20 @@ void execute_word(Stack* st, RetStack* ret_st, Dict* dic, DictElem* d) {
 			if (!v) {
 				i = find_token(d, t->jump) - 1;
 			}
+		} else if (str_cmp(t->value, "WHILE")) {
+			Token *t1;
+			if (stack_empty(st)) {
+				puts("error: stack underflow\n");
+				return;
+			}
+			t1 = stack_pop(st);
+			int v = atoi(t1->value);
+			delete_token(t1);
+			if (!v) {
+				i = find_token(d, t->jump);
+			}
+		} else if (str_cmp(t->value, "REPEAT")) {
+			i = find_token(d, t->jump) - 1;
 		} else if (is_int(t->value)) {
 			stack_push(st, copy_token(d->tokens[i]));
 		} else {

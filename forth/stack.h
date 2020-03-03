@@ -39,6 +39,9 @@ int rstack_top(RetStack *st);
 
 /* Forth methods */
 void _dup(Stack *st, RetStack* ret_st);
+void _2dup(Stack *st, RetStack* ret_st);
+void _over(Stack *st, RetStack* ret_st);
+void _rot(Stack *st, RetStack* ret_st);
 void _cl(Stack *st, RetStack* ret_st);
 void _dot(Stack *st, RetStack* ret_st);
 void _dot_s(Stack *st, RetStack* ret_st);

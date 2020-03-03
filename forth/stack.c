@@ -68,6 +68,60 @@ void _dup(Stack *st, RetStack* ret_st) {
 	stack_push(st, t2);	
 }
 
+void _2dup(Stack *st, RetStack* ret_st) {
+	Token *t1, *t2, *t3, *t4;
+	if (stack_empty(st)) {
+		puts("error: stack underflow\n");
+		return;
+	}
+	t1 = stack_pop(st);
+	if (stack_empty(st)) {
+		puts("error: stack underflow\n");
+		return;
+	}
+	t2 = stack_pop(st);
+	t3 = copy_token(t1);
+	t4 = copy_token(t2);
+	stack_push(st, t2);	
+	stack_push(st, t1);	
+	stack_push(st, t4);	
+	stack_push(st, t3);	
+}
+
+void _over(Stack *st, RetStack* ret_st) {
+	Token *t1, *t2, *t3;
+	if (stack_empty(st)) {
+		puts("error: stack underflow\n");
+		return;
+	}
+	t1 = stack_pop(st);
+	if (stack_empty(st)) {
+		puts("error: stack underflow\n");
+		return;
+	}
+	t2 = stack_pop(st);
+	t3 = copy_token(t2);
+	stack_push(st, t3);
+	stack_push(st, t1);		
+	stack_push(st, t2);	
+}
+
+void _rot(Stack *st, RetStack* ret_st) {
+	Token *t1;
+	if (stack_empty(st)) {
+		puts("error: stack underflow\n");
+		return;
+	}
+	t1 = stack_pop(st);
+	if (stack_empty(st)) {
+		puts("error: stack underflow\n");
+		return;
+	}
+	_swap(st, ret_st);
+	stack_push(st, t1);	
+	_swap(st, ret_st);
+}
+
 void _cl(Stack *st, RetStack* ret_st) {
 	clear_screen();
 }
