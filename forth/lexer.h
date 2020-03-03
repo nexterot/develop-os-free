@@ -38,6 +38,7 @@ typedef struct lexer{
 typedef struct token{
 	 char* value;
 	 int value_len;
+	 struct token* jump;
 } Token;
 
 /* Lexer methods */

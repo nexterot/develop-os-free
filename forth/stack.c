@@ -476,3 +476,15 @@ void _ret_copy_st(Stack *st, RetStack* ret_st) {
 	t1->value_len = len + 1;
 	stack_push(st, t1);
 }
+
+void _if(Stack *st, RetStack* ret_st) {
+
+}
+
+void _else(Stack *st, RetStack* ret_st) {
+	
+}
+
+void _then(Stack *st, RetStack* ret_st) {
+	
+}

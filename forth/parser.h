@@ -23,6 +23,9 @@ enum PARSER_RULE {
 typedef struct par{
 	enum PARSER_STATE state;
 	enum PARSER_RULE rule;
+	char constant;
+	char forget;
+	char variable;
 } Parser;
 
 /* Parser methods */

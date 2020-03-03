@@ -57,5 +57,8 @@ void _less(Stack *st, RetStack* ret_st);
 void _ret_to_st(Stack *st, RetStack* ret_st);
 void _st_to_ret(Stack *st, RetStack* ret_st);
 void _ret_copy_st(Stack *st, RetStack* ret_st);
+void _if(Stack *st, RetStack* ret_st);
+void _else(Stack *st, RetStack* ret_st);
+void _then(Stack *st, RetStack* ret_st);
 
 #endif

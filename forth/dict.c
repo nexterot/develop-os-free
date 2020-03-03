@@ -104,6 +104,31 @@ void init_dict(Dict* dic) {
 	d->func_ptr = _ret_copy_st;	
 	d->is_immediate = 0;
 	add_word(dic, d);
+	// @
+	d = new_dict_elem("@", 1);
+	d->func_ptr = _ret_copy_st;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// !
+	d = new_dict_elem("!", 1);
+	d->func_ptr = _ret_copy_st;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// CONSTANT
+	d = new_dict_elem("CONSTANT", 8);
+	d->func_ptr = _ret_copy_st;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// VARIABLE
+	d = new_dict_elem("VARIABLE", 8);
+	d->func_ptr = _ret_copy_st;	
+	d->is_immediate = 0;
+	add_word(dic, d);
+	// THEN 
+	d = new_dict_elem("THEN", 4);
+	d->func_ptr = _then;	
+	d->is_immediate = 1;
+	add_word(dic, d);
 }
 
 DictElem* find_word(Dict* dic, const char* name) {
@@ -169,20 +194,46 @@ void forget_word(Dict* dic, const char* name) {
 	}
 }
 
+int find_token(DictElem* d, Token* t) {
+	for (int i = 0; i < d->tokens_len; i++) {
+		if (d->tokens[i] == t) {
+			return i;
+		}
+	}
+	return -1;
+}
 
 void execute_word(Stack* st, RetStack* ret_st, Dict* dic, DictElem* d) {
 	if (d->func_ptr != NULL) {
 		(*d->func_ptr)(st, ret_st);
 		return;
 	}
+	Token* t;
+	DictElem *d2;
 	for (int i = 0; i < d->tokens_len; i++) {
-		Token* t = copy_token(d->tokens[i]);
-		DictElem *d;
-		d = find_word(dic, t->value);
-		if (d != NULL) {
-			execute_word(st, ret_st, dic, d);
+		t = d->tokens[i];
+		d2 = find_word(dic, t->value);
+		if (d2 != NULL) {
+			execute_word(st, ret_st, dic, d2);
+		} else if (str_cmp(t->value, "IF")) {
+			Token *t1;
+			if (stack_empty(st)) {
+				puts("error: stack underflow\n");
+				return;
+			}
+			t1 = stack_pop(st);
+			int v = atoi(t1->value);
+			delete_token(t1);
+			if (!v) {
+				i = find_token(d, t->jump) - 1;
+				if (str_cmp(t->jump->value, "ELSE")) {
+					i++;
+				}
+			}
+		} else if (str_cmp(t->value, "ELSE")) {
+			i = find_token(d, t->jump) - 1;
 		} else if (is_int(t->value)) {
-			stack_push(st, t);
+			stack_push(st, copy_token(d->tokens[i]));
 		} else {
 			puts("invalid token\n");
 			return;

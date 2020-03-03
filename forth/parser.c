@@ -9,6 +9,9 @@ Parser* new_parser() {
 	Parser* p = (Parser*) malloc(sizeof(Parser));	
 	p->state = PARSER_STATE_EXECUTE;
 	p->rule = PARSER_RULE_START;
+	p->constant = 0;
+	p->variable = 0;
+	p->forget = 0;
 	return p;
 }
 
@@ -19,17 +22,32 @@ void parse(Parser* p, Stack* st, RetStack* ret_st, Dict* dic, Token* t) {
 	case PARSER_STATE_COMPILE:
 		switch(p->rule) {
 		case PARSER_RULE_START:
-			printf("new word %s, len %d\n", t->value, t->value_len);
+			//printf("new word %s, len %d\n", t->value, t->value_len);
 			new_d = new_dict_elem(t->value, t->value_len);
 			add_word(dic, new_d);
 			p->rule = PARSER_RULE_BODY;
 			break;
 		case PARSER_RULE_BODY:
 			if (str_cmp(t->value, ";")) {
-				printf("end word %s\n", dic->top->name);
+				//printf("end word %s\n", dic->top->name);
 				p->state = PARSER_STATE_EXECUTE;
+			} else if (str_cmp(t->value, "IF")) {
+				//printf("word %s: add IF\n", dic->top->name);
+				rstack_push(ret_st, (int)t);
+				dict_elem_add_token(dic->top, t);
+			} else if (str_cmp(t->value, "ELSE")) {
+				//printf("word %s: add ELSE\n", dic->top->name);
+				Token* x = (Token*) rstack_pop(ret_st);
+				x->jump = t;
+				rstack_push(ret_st, (int)t);
+				dict_elem_add_token(dic->top, t);
+			} else if (str_cmp(t->value, "THEN")) {
+				//printf("word %s: add THEN\n", dic->top->name);
+				Token* x = (Token*) rstack_pop(ret_st);
+				x->jump = t;
+				dict_elem_add_token(dic->top, t);
 			} else {
-				printf("word %s: add token %s\n", dic->top->name, t->value);
+				//printf("word %s: add token %s\n", dic->top->name, t->value);
 				dict_elem_add_token(dic->top, t);
 			}
 			break;
@@ -41,7 +59,7 @@ void parse(Parser* p, Stack* st, RetStack* ret_st, Dict* dic, Token* t) {
 	// EXECUTE STATE
 	case PARSER_STATE_EXECUTE:
 		d = find_word(dic, t->value);
-		if (d != NULL) {
+		 if (d != NULL) {
 			execute_word(st, ret_st, dic, d);
 		} else if (is_int(t->value)) {
 			stack_push(st, t);
